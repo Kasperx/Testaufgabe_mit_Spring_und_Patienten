@@ -2,9 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Person;
 import com.example.demo.repository.PersonRepository;
-import com.example.demo.service.Database;
 import com.example.demo.service.PersonService;
-import jakarta.persistence.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +18,8 @@ import java.util.Map;
 import static com.example.demo.service.PersonService.*;
 
 @RestController
-//@RequestMapping("/persons")
-@RequestMapping("")
+@RequestMapping("/persons")
+//@RequestMapping("")
 public class PersonController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
@@ -42,7 +39,7 @@ public class PersonController {
     @PostMapping("/createMoreData")
     public void createMoreData(@RequestParam String username, @RequestParam String pw) throws InvalidParameterException {
         if(isAdminAccount(username, pw)) {
-            List<Person> personList = Database.getData();
+            List<Person> personList = createNewData();
             log.info("Saving all data ("+personList.size()+") to database.");
             personRepository.saveAll(personList);
         }
@@ -52,7 +49,7 @@ public class PersonController {
     public void createDBTable (@RequestParam(required = false) String username, @RequestParam(required = false) String pw) throws InvalidParameterException {
         try {
             if (isAdminAccount(username, pw)) {
-                personRepository.saveAll(Database.getNewData());
+                personRepository.saveAll(createNewData());
             } else {
                 return;
             }
@@ -94,7 +91,7 @@ public class PersonController {
     Iterable<Person> getData (boolean isAdmin) {
         List<Map<String, Object>> personList = jdbcTemplate.queryForList("select * from " + PersonService.databaseName + " limit 1");
         if (personList.isEmpty()) {
-            personRepository.saveAll(Database.getNewData());
+            personRepository.saveAll(createNewData());
         }
         if (isAdmin) {
             if(careAboutPersonalData) {
@@ -121,7 +118,7 @@ public class PersonController {
     Iterable<Person> getDataForAdmin () {
         List<Map<String, Object>> personList = jdbcTemplate.queryForList("select * from " + databaseName + " limit 1;");
         if (personList.isEmpty()) {
-            personRepository.saveAll(Database.getNewData());
+            personRepository.saveAll(createNewData());
         }
         return convertObjectToList(jdbcTemplate.queryForList("select * from " + databaseName + " where isadmin is not true;"));
     }
