@@ -1,0 +1,83 @@
+
+image: maven:3.8.3-openjdk-17
+
+variables:
+  MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
+
+cache:
+  paths:
+    #- .m2/repository
+    #- ./.m2/repository
+    - $CI_PROJECT_DIR/.m2/
+  # keep cache across branch
+  #key: maven-cache
+  key: "$CI_BUILD_REF_NAME"
+
+stages:
+  - build
+  - install
+  - test
+  - deploy
+
+compile:
+  stage: build
+  script:
+    - echo "Compile java code"
+    - "mvn clean compile -Dmaven.test.skip $MAVEN_CLI_OPTS"
+
+install:
+  stage: install
+  dependencies:
+    - compile
+  script:
+    - echo "Compile java code"
+    - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
+
+test:
+  stage: test
+  script:
+    - echo "Run tests (after compile)"
+    - "mvn compile test $MAVEN_CLI_OPTS"
+  dependencies:
+    - integrationtest
+  artifacts:
+    paths:
+      - target/
+
+deploy:
+  stage: deploy
+  dependencies:
+    - test
+  only:
+    refs:
+      - master
+      - main
+  when: manual
+  script:
+    - echo "Deploy"
+
+integrationtest:
+  stage: test
+  dependencies:
+    - install
+  script:
+    - "mvn verify $MAVEN_CLI_OPTS"
+  artifacts:
+    paths:
+      - target/
+
+deploy-job:
+  stage: deploy
+  #only:
+#    refs:
+#      - master
+#      - main
+  dependencies:
+    - test
+  artifacts:
+    paths:
+      - "target/*.jar"
+  script:
+    - echo "Deploy to target folder"
+    - ""
