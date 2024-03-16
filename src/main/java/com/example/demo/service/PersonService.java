@@ -28,14 +28,27 @@ public class PersonService implements WebMvcConfigurer {
     public static final String databaseName = "PERSON";
     public static final boolean careAboutPersonalData = true;
 
+    public static enum IsAdmin {
+        YES(""),
+        EMPTY_PARAMETER(MESSAGE_ERROR_EMPTY_PARAMETERS),
+        WRONG_PARAMETER(MESSAGE_ERROR_WRONG_PARAMETERS);
+        String text;
+        IsAdmin(String text){
+            this.text = text;
+        }
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
 
-    public static boolean isAdminAccount (String username, String pw) throws InvalidParameterException {
+    public static IsAdmin isAdminAccount (String username, String pw){
         if(isParameterEmpty(username, pw)) {
-            throw new InvalidParameterException(MESSAGE_ERROR_EMPTY_PARAMETERS);
+            return IsAdmin.EMPTY_PARAMETER;
         } else if (username.equals("admin") && pw.equals("secret")) {
-            return true;
+            return IsAdmin.YES;
         } else {
-            throw new InvalidParameterException(MESSAGE_ERROR_WRONG_PARAMETERS);
+            return IsAdmin.WRONG_PARAMETER;
         }
     }
 
