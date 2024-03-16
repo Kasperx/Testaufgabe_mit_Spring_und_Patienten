@@ -72,7 +72,8 @@ deploy-remote:
     - 'which sshpass || ( apt-get update -y && apt-get install sshpass -y )'
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
-    - ssh-add <(echo "${SSH_PRIVATE_KEY}" | base64 -d | tr -d "\r")
+    #- ssh-add <(echo "${SSH_PRIVATE_KEY}" | base64 -d | tr -d "\r")
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - echo "Deploy to 'web@${URL}/web/'"
