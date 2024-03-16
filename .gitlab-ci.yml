@@ -59,7 +59,8 @@ deploy-remote:
       - master
       - main
       - deploy-remote-ssh
-  image: debian:oldstable
+  #image: debian:oldstable
+  image: ubuntu
   when: manual
   #environment:
 #    name: Staging
