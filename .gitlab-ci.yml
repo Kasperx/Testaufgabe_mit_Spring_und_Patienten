@@ -65,7 +65,7 @@ deploy-remote:
 #    name: Staging
 #    url: "$URL"
   before_script:
-    - echo " ---Test= ---"
+    - echo " ---Test ---"
     - echo "url= ${URL}"
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - 'which sshpass || ( apt-get update -y && apt-get install sshpass -y )'
