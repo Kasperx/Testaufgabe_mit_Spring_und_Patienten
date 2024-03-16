@@ -53,6 +53,7 @@ deploy-remote:
     refs:
       - master
       - main
+      - deploy-remote-ssh
   image: ubuntu
   when: manual
   environment:
