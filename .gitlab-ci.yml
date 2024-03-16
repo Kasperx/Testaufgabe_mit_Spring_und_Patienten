@@ -45,17 +45,18 @@ test:
     paths:
       - target/
 
-deploy:
+deploy-remote:
   stage: deploy
   dependencies:
-    - test
+    - deploy-local
   only:
     refs:
       - master
       - main
   when: manual
   script:
-    - echo "Deploy"
+    - echo "Deploy to 'web@85.215.186.215/web/'"
+    - "scp 'target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@85.215.186.215/web/'"
 
 integrationtest:
   stage: test
@@ -67,7 +68,7 @@ integrationtest:
     paths:
       - target/
 
-deploy-job:
+deploy-local:
   stage: deploy
   #only:
 #    refs:
