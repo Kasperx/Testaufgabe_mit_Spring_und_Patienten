@@ -34,13 +34,13 @@ install:
     - echo "Compile java code"
     - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
-test:
+test-with-junit:
   stage: test
   script:
     - echo "Run tests (after compile)"
     - "mvn compile test $MAVEN_CLI_OPTS"
   dependencies:
-    - integrationtest
+    - integration-test
   artifacts:
     paths:
       - target/
@@ -73,7 +73,7 @@ deploy-remote:
     #- ssh test@$url -c \"rm web/*\"
     - scp target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@$url:/web/
 
-integrationtest:
+integration-test:
   stage: test
   dependencies:
     - install
@@ -90,7 +90,7 @@ deploy-local:
 #      - master
 #      - main
   dependencies:
-    - test
+    - test-with-junit
   artifacts:
     paths:
       - "target/*.jar"
