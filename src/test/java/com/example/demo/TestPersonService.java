@@ -1,7 +1,5 @@
 package com.example.demo;
 
-import com.example.demo.controller.PersonController;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

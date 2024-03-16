@@ -46,10 +46,18 @@ public class FrontendController {
 
     @PostMapping("/createMoreData")
     public void createMoreData(@RequestParam String username, @RequestParam String pw) throws InvalidParameterException {
-        if(isAdminAccount(username, pw)) {
-            List<Person> personList = createNewData();
-            log.info("Saving all data ("+personList.size()+") to database.");
-            personRepository.saveAll(personList);
+        switch (isAdminAccount(username, pw)) {
+            case YES -> {
+                List<Person> personList = createNewData();
+                log.info("Saving all data ("+personList.size()+") to database.");
+                personRepository.saveAll(personList);
+            }
+            case EMPTY_PARAMETER -> {
+                log.error(IsAdmin.EMPTY_PARAMETER.toString());
+            }
+            case WRONG_PARAMETER -> {
+                log.error(IsAdmin.WRONG_PARAMETER.toString());
+            }
         }
     }
 
@@ -58,18 +66,24 @@ public class FrontendController {
     //public String loadData(Model model){
         //return "forward:/resources/templates/index.html";
         createNewDataIfNotCreated();
-        try {
-            List<Person> personList = filterPersonData(isAdminAccount(username, pw), personRepository.findAll());
-            //List<Person> personList = PersonService.getData(personRepository.findAll());
-            model.addAttribute("persons", personList);
-        } catch (InvalidParameterException ipe){
-            List<Person> personList = PersonService.filterPersonData(personRepository.findAll());
-            model.addAttribute("persons", personList);
-            model.addAttribute("message", ipe.getMessage());
-            log.error(ipe.getMessage());
-        } catch (Exception e){
-            model.addAttribute("message", e.getMessage());
-            log.error("", e);
+        //List<Person> personList = filterPersonData(isAdminAccount(username, pw), personRepository.findAll());
+        switch (isAdminAccount(username, pw)) {
+            case YES -> {
+                List<Person> personList = filterPersonData(true, personRepository.findAll());
+                model.addAttribute("persons", personList);
+            }
+            case EMPTY_PARAMETER -> {
+                log.error(IsAdmin.EMPTY_PARAMETER.toString());
+                List<Person> personList = filterPersonData(personRepository.findAll());
+                model.addAttribute("persons", personList);
+                model.addAttribute("message", IsAdmin.EMPTY_PARAMETER.toString());
+            }
+            case WRONG_PARAMETER -> {
+                log.error(IsAdmin.WRONG_PARAMETER.toString());
+                List<Person> personList = filterPersonData(personRepository.findAll());
+                model.addAttribute("persons", personList);
+                model.addAttribute("message", IsAdmin.WRONG_PARAMETER.toString());
+            }
         }
         return htmlFile;
     }
