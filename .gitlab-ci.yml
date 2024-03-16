@@ -53,7 +53,7 @@ deploy-remote:
     refs:
       - master
       - main
-  image: alpine
+  image: ubuntu
   when: manual
   environment:
     name: Staging
