@@ -70,12 +70,12 @@ deploy-remote:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - 'which sshpass || ( apt-get update -y && apt-get install sshpass -y )'
     - mkdir -p ~/.ssh
+    - ssh-add <(echo "${SSH_PRIVATE_KEY}" | base64 -d)
     - eval $(ssh-agent -s)
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - echo "Deploy to 'web@${URL}/web/'"
     #- "mkdir -p ~/.ssh && echo $SSH_PRIVATE_KEY | base64 -d > ${SSH_KEY_FILE} && chmod 0600 ${SSH_KEY_FILE}"
-    - ssh-add <(echo "${SSH_PRIVATE_KEY}" | base64 -d)
     - ssh -o StrictHostKeyChecking=no web@${URL}" 'rm -rf ~/web/*'
     #- ssh test@$url -c \"rm web/*\"
     - scp target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@${URL}:/web/
