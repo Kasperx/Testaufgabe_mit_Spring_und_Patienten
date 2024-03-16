@@ -36,6 +36,11 @@ install:
 
 test-with-junit:
   stage: test
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
   script:
     - echo "Run tests (after compile)"
     - "mvn compile test $MAVEN_CLI_OPTS"
@@ -75,6 +80,11 @@ deploy-remote:
 
 integration-test:
   stage: test
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
   dependencies:
     - install
   script:
@@ -85,6 +95,11 @@ integration-test:
 
 deploy-local:
   stage: deploy
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
   #only:
 #    refs:
 #      - master
