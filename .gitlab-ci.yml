@@ -73,7 +73,7 @@ deploy-remote:
   script:
     - echo "Deploy to 'web@$url/web/'"
     #- "mkdir -p ~/.ssh && echo $SSH_PRIVATE_KEY | base64 -d > ${SSH_KEY_FILE} && chmod 0600 ${SSH_KEY_FILE}"
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY" | base64 -d)
     - ssh -o StrictHostKeyChecking=no web@"$url" 'rm -rf ~/web/*'
     #- ssh test@$url -c \"rm web/*\"
     - scp target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@$url:/web/
