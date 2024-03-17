@@ -141,7 +141,7 @@ public class PersonService implements WebMvcConfigurer {
             }
         }
     }
-    private static final String pathToWebFiles = "/resources/webapp";
+    //private static final String pathToWebFiles = "/resources/webapp";
     public static List<Person> createNewDataWithAdmin() {
         List<Person> personList = new ArrayList<>();
         // Create admin person
@@ -149,20 +149,29 @@ public class PersonService implements WebMvcConfigurer {
         personList.add(getNewPerson(true));
         // Create random person
         personList.addAll(createNewData());
-        log.info("Saving all "+personList.size()+" data to database.");
+        log.info("Creating "+personList.size()+" data for persons.");
         return personList;
     }
-
+    private final static int countPersonData = 10;
     public static List<Person> createNewData() {
+        return createNewData(countPersonData);
+    }
+    private final static boolean haveMoreThan1Admin = true;
+    public static List<Person> createNewData(int countPersonData) {
         List<Person> personList = new ArrayList<>();
-        // Create random person
-        for (int i = 0; i < 10; i++) {
-            Person person = getNewPerson();
+        Person person = null;
+        if(haveMoreThan1Admin) {
+            // Create another admin account with random data
+            person = getNewPerson(true);
+            log.info("Creating data for random person. [" + person.toString() + "]");
+            personList.add(person);
+            countPersonData -= 1;
+        }
+        for (int i = 0; i < countPersonData; i++) {
+            person = getNewPerson();
             log.info("Creating data for random person #"+(i+1)+". ["+person.toString()+"]");
-            //personList.add(getNewPerson(false));
             personList.add(person);
         }
-        //log.info("Saving all "+personList.size()+" to database.");
         return personList;
     }
 

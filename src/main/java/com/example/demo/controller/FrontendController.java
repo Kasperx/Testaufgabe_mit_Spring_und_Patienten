@@ -45,18 +45,28 @@ public class FrontendController {
     //public FrontendController(PersonRepository frontendController) { this.personRepository = frontendController; }
 
     @PostMapping("/createMoreData")
-    public void createMoreData(@RequestParam String username, @RequestParam String pw) throws InvalidParameterException {
+    public void createMoreData(@RequestParam(required = false) String username, @RequestParam(required = false) String pw, Model model){
         switch (isAdminAccount(username, pw)) {
             case YES -> {
-                List<Person> personList = createNewData();
-                log.info("Saving all data ("+personList.size()+") to database.");
-                personRepository.saveAll(personList);
+                if(isDatabaseEmpty()) {
+                    createNewData(true);
+                    model.addAttribute("message",
+                        "Created new data with admin account(s).");
+                } else {
+                    createNewData();
+                    model.addAttribute("message",
+                        "Created new data.");
+                }
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
+                model.addAttribute("message",
+                        "Did not create new data: " + IsAdmin.EMPTY_PARAMETER.toString());
             }
             case WRONG_PARAMETER -> {
                 log.error(IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute("message",
+                        "Did not create new data: " + IsAdmin.WRONG_PARAMETER.toString());
             }
         }
     }
@@ -65,8 +75,6 @@ public class FrontendController {
     public String loadData(@RequestParam(required = false) String username, @RequestParam(required = false) String pw, Model model){
     //public String loadData(Model model){
         //return "forward:/resources/templates/index.html";
-        createNewDataIfNotCreated();
-        //List<Person> personList = filterPersonData(isAdminAccount(username, pw), personRepository.findAll());
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 List<Person> personList = filterPersonData(true, personRepository.findAll());
@@ -87,12 +95,28 @@ public class FrontendController {
         }
         return htmlFile;
     }
-    void createNewDataIfNotCreated(){
-        //if(personRepository.findAll().isEmpty()){
-        if(jdbcTemplate.queryForList("select * from " + databaseName + " limit 1;").isEmpty()){
+    private void createNewDataIfNotCreated(){
+        if(isDatabaseEmpty()){
             List<Person> personList = createNewDataWithAdmin();
-            log.info("Saving all data ("+personList.size()+") to database.");
+            log.info("Saving all "+personList.size()+" data to database.");
             personRepository.saveAll(personList);
         }
+    }
+    private void createNewData(){
+        createNewData(false);
+    }
+    private void createNewData(boolean withAdmin){
+        if(withAdmin) {
+            List<Person> personList = createNewDataWithAdmin();
+            log.info("Saving all " + personList.size() + " data to database.");
+            personRepository.saveAll(personList);
+        } else {
+            List<Person> personList = PersonService.createNewData();
+            log.info("Saving all " + personList.size() + " data to database.");
+            personRepository.saveAll(personList);
+        }
+    }
+    private boolean isDatabaseEmpty(){
+        return jdbcTemplate.queryForList("select * from " + databaseName + " limit 1;").isEmpty();
     }
 }
