@@ -22,11 +22,26 @@
 </head>
 
 <body style="background-color:#D8D8D8;">
-<div th:replace="fragments/header :: header"></div>
 
 <!--<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">-->
 <div class="container">
     <h2 class="text-center">Personendaten</h2>
+    <h3 class="text-center">Steuerung</h3>
+    <h4>
+        <div class="text-center">
+            <!--<ul th:if="${persons.size() > 0} and ${persons[0].email != null}">-->
+            <ul>
+                <a class="btn btn-info" th:href="@{/createMoreData(username='admin',pw='secret')}">Erstelle Daten</a>
+            </ul>
+            <ul>
+                <a class="btn btn-info" th:href="@{/}">Zeige Daten</a>
+            </ul>
+            <!--<ul th:if="${persons.size() > 0} and ${persons[0].email != null}">-->
+            <ul>
+                <a class="btn btn-info" th:href="@{/createMoreData(username='admin',pw='secret')}">Zeige alle Daten</a>
+            </ul>
+        </div>
+    </h4>
 
     <div th:if="${message != null}"
          class="alert alert-success alert-dismissible fade show text-center message"
