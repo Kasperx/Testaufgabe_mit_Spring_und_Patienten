@@ -1,0 +1,14 @@
+services:
+  web:
+    image: java-spring-boot-test
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+    ports:
+      - 5000:5000
+    networks:
+      - webnet
+networks:
+  webnet:

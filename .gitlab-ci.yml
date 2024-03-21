@@ -66,8 +66,7 @@ deploy-remote:
 #    name: Staging
 #    url: "$URL"
   before_script:
-    - echo " ---Test ---"
-    - echo "url= ${URL}"
+    - echo "Preparing deploy to 'web@${URL}/web/'"
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     #- 'which sshpass || ( apt-get update -y && apt-get install sshpass -y )'
     - mkdir -p ~/.ssh
@@ -104,10 +103,6 @@ deploy-local:
       - master
       - main
       - deploy-remote-ssh
-  #only:
-#    refs:
-#      - master
-#      - main
   dependencies:
     - test-with-junit
   artifacts:
@@ -115,4 +110,4 @@ deploy-local:
       - "target/*.jar"
   script:
     - echo "Deploy to target folder"
-    - ""
+    - "mvn package"
