@@ -87,7 +87,8 @@ deploy-remote-docker-der_staudamm:
       - deploy-remote-ssh
       - db-data-call
   #image: debian:oldstable
-  image: docker:20-git
+  #image: docker:20-git
+  image: docker
   when: manual
   #environment:
 #    name: Staging
