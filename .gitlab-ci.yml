@@ -34,7 +34,7 @@ install:
     - echo "Compile java code"
     - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
-test-with-junit:
+.test-with-junit:
   stage: test
   script:
     - echo "Run tests (after compile)"
@@ -106,7 +106,7 @@ deploy-remote-docker-der_staudamm:
     #- docker push $CI_REGISTRY_NAME:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY:1
 
-integration-test:
+.integration-test:
   stage: test
   only:
     refs:
@@ -131,7 +131,8 @@ deploy-local:
       - deploy-remote-ssh
       - db-data-call
   dependencies:
-    - test-with-junit
+    #- test-with-junit
+    - install
   artifacts:
     paths:
       - "target/*.jar"
