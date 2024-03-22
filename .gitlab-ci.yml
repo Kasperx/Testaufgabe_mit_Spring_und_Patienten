@@ -128,7 +128,7 @@ deploy-remote-gitlab:
     - echo "Preparing deploy to gitlab.com"
     #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
     #- docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN # error in pipeline
-    - docker login -u $ci_gitlab_registry_user --password-stdin <<<$gitlab_registry_token $ci_gitlab_registry
+    - docker login -u "$ci_gitlab_registry_user" --password-stdin <<<"$gitlab_registry_token" "$ci_gitlab_registry"
   script:
     - echo "Preparing deploy to registry.gitlab.com -> $ci_gitlab_registry_user/$CI_REGISTRY:1"
     - docker build -t registry.gitlab.com/$ci_gitlab_registry_user/$ci_gitlab_registry .
