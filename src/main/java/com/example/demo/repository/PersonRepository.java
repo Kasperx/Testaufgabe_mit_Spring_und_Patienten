@@ -35,4 +35,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             nativeQuery = true
     )
     List<Person> findAdmin();
+
+    List<Person> findByIsAdminFalse();
+    List<Person> findByIsAdminTrue();
 }

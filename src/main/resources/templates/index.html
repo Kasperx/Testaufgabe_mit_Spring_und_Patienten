@@ -70,16 +70,16 @@
     </div>
 
     <div th:if="${persons.size() > 0}">
-        <marquee th:text="${persons[0].email} == null ? 'User view' : 'Admin-view'" direction="right"></marquee>
+        <marquee th:text="${persons[0].email} == null or ${persons[0].email} == '' ? 'User view' : 'Admin-view'" direction="right"></marquee>
         <table class="table table-hover table-responsive-xl table-striped">
             <thead class="thead-light">
             <tr>
                 <th class="col-md-4" scope="col">Vorname</th>
                 <th class="col-md-4" scope="col">Nachname</th>
-                <th th:if="${persons[0].email} != null" class="col-md-4" scope="col">EMailadresse</th>
-                <th class="col-md-4" scope="col">Alter</th>
-                <th th:if="${persons[0].email} != null" class="col-md-4" scope="col">Passwort</th>
-                <th th:if="${persons[0].email} != null" class="col-md-4" scope="col">Ist Admin</th>
+                <th th:if="${persons[0].email} != null and ${persons[0].email} != ''" class="col-md-4" scope="col">EMailadresse</th>
+                <th th:if="${persons[0].email} != null and ${persons[0].email} != ''" class="col-md-4" scope="col">Gerbutsdatum (Alter)</th>
+                <th th:if="${persons[0].email} != null and ${persons[0].email} != ''" class="col-md-4" scope="col">Passwort</th>
+                <th th:if="${persons[0].email} != null and ${persons[0].email} != ''" class="col-md-4" scope="col">Ist Admin</th>
                 <!--
                 <th class="col-md-6" scope="col">Vorname</th>
                 <th class="col-md-6" scope="col">Nachname</th>
@@ -94,11 +94,11 @@
             <tr th:each="person : ${persons}">
                 <td class="col-md-4">[[${person.firstName}]]</td>
                 <td class="col-md-4">[[${person.lastName}]]</td>
-                <td th:if="${person.email} != null" class="col-md-4">[[${person.email}]]</td>
-                <td class="col-md-4">[[${person.age}]]</td>
-                <td th:if="${person.email} != null" class="col-md-4">[[${person.password}]]</td>
-                <td th:if="${person.email} != null" class="col-md-4">[[${person.isAdmin}]]</td>
-                <td th:if="${persons[0].email} != null" class="col-md-4">
+                <td th:if="${person.email} != null and ${person.email} != ''" class="col-md-4">[[${person.email}]]</td>
+                <td th:if="${person.email} != null and ${person.email} != ''" class="col-md-4">[[${person.birthdata}]]</td>
+                <td th:if="${person.email} != null and ${person.email} != ''" class="col-md-4">[[${person.password}]]</td>
+                <td th:if="${person.email} != null and ${person.email} != ''" class="col-md-4">[[${person.isAdmin}]]</td>
+                <td th:if="${person.email} != null and ${person.email} != ''" class="col-md-4">
                     <a
                         th:href="@{'/persons/' + ${person.id}}"
                         title="Edit this person"

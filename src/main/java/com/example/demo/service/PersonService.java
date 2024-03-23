@@ -8,11 +8,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
 import java.security.InvalidParameterException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -71,8 +81,8 @@ public class PersonService implements WebMvcConfigurer {
                     person.setEmail(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("AGE")) {
-                    person.setAge(
-                            Integer.parseInt(temp.toString().split("=")[1]));
+                    person.setBirthdata(
+                            temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("PASSWORD")) {
                     if(careAboutPersonalData){
                         person.setPassword("***");
@@ -101,8 +111,8 @@ public class PersonService implements WebMvcConfigurer {
                     temp.getLastName());
             person.setEmail(
                     temp.getEmail());
-            person.setAge(
-                    temp.getAge());
+            person.setBirthdata(
+                    temp.getBirthdata());
             if(careAboutPersonalData){
                     person.setPassword("***");
             } else {
@@ -178,16 +188,25 @@ public class PersonService implements WebMvcConfigurer {
     static Person getNewPerson () {
         return getNewPerson(false);
     }
+    Instant now = Instant.now();
+    private final static LocalDate date = LocalDate.now(ZoneId.of("Europe/Berlin"));
     static Person getNewPerson (boolean isAdmin) {
         Faker faker = new Faker();
         String firstName = faker.name().firstName();
         String lastName = faker.name().lastName();
+        // test
+        int randomDay = ThreadLocalRandom.current().nextInt(1, 30 + 1);
+        int randomMonth = ThreadLocalRandom.current().nextInt(1, 12 + 1);
+        int randomYear = LocalDate.now().getYear() - ThreadLocalRandom.current().nextInt(1, 100 + 1);
+        String birtdata = LocalDate.of(randomYear, randomMonth, randomDay)
+                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        // test
         return new Person(
                 firstName,
                 lastName,
                 firstName.charAt(0) + "." + lastName + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                 RandomStringUtils.random(10, true, true),
-                ThreadLocalRandom.current().nextInt(1, 100 + 1),
+                birtdata,
                 isAdmin
         );
     }
@@ -204,7 +223,7 @@ public class PersonService implements WebMvcConfigurer {
             return temp;
         }
     }
-
+/*
     public static List<Person> filterPersonData(List<Person> personList) {
         return filterPersonData(false, personList);
     }
@@ -219,7 +238,7 @@ public class PersonService implements WebMvcConfigurer {
                         (careAboutPersonalData
                                 ? "***"
                                 : person.getPassword()),
-                        person.getAge(),
+                        person.getBirthdata(),
                         person.isAdmin()
                 ));
             }
@@ -229,11 +248,38 @@ public class PersonService implements WebMvcConfigurer {
                     temp.add(new Person(
                             person.getFirstName(),
                             person.getLastName(),
-                            person.getAge()
+                            person.getBirthdata()
                     ));
                 }
             }
         }
         return temp;
+    }
+ */
+    public static List<Person> getDataWithoutSensibleInfos(List<Person> personList){
+        return getDataWithoutSensibleInfos(false, personList);
+    }
+    public static List<Person> getDataWithoutSensibleInfos(boolean isAdmin, List<Person> personList){
+        if(isAdmin) {
+            if (careAboutPersonalData) {
+                List<Person> personList1 = new ArrayList<>();
+                for (Person person : personList) {
+                    person.setPassword("***");
+                    personList1.add(person);
+                }
+                return personList1;
+            } else {
+                return personList;
+            }
+        } else {
+            List<Person> personList1 = new ArrayList<>();
+            for (Person person : personList) {
+                person.setPassword("");
+                person.setEmail("");
+                person.setBirthdata("");
+                personList1.add(person);
+            }
+            return personList1;
+        }
     }
 }

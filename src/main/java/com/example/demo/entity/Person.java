@@ -1,10 +1,12 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import static com.example.demo.service.PersonService.getTabsForConsoleOut;
 
@@ -22,19 +24,19 @@ public class Person {
     @Column(name = "ID", unique = true)
     int id;
 
-    public Person(String firstName, String lastName, String email, String password, int age, boolean isAdmin) {
+    public Person(String firstName, String lastName, String email, String password, String birthdata, boolean isAdmin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.age = age;
+        this.birthdata = birthdata;
         this.isAdmin = isAdmin;
     }
 
-    public Person(String firstName, String lastName, int age) {
+    public Person(String firstName, String lastName, String birthdata) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
+        this.birthdata = birthdata;
     }
 
     @Column(name = "FIRSTNAME")
@@ -49,8 +51,9 @@ public class Person {
     @Column(name = "PASSWORD")
     String password;
 
-    @Column(name = "AGE")
-    int age;
+    @DateTimeFormat(pattern = "dd:MM:yyyy")
+    @Column(name = "BIRTHDATE")
+    String birthdata;
 
     @Column(name = "ISADMIN")
     boolean isAdmin;
@@ -69,37 +72,6 @@ public class Person {
                 '}';
     }
      */
-    /*
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", firstName("+firstName.length()+")='" + firstName + '\'' +
-                (firstName.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (firstName.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "lastName("+lastName.length()+")='" + lastName + '\'' +
-                (lastName.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (lastName.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "email("+email.length()+")='" + email + '\'' +
-                (email.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (email.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "password("+password.length()+")='" + password + '\'' +
-                ", \tage=" + age +
-                ", \tisAdmin=" + isAdmin +
-                '}';
-    }
-     */
     final boolean showLengthOfText = false;
     public String toString() {
         if(showLengthOfText){
@@ -113,7 +85,7 @@ public class Person {
                     ", " + getTabsForConsoleOut(email) +
                     "password(" + password.length() + ")='" + password + '\'' +
                     ", " + getTabsForConsoleOut(password) +
-                    "age=" + age +
+                    "birthdata=" + birthdata +
                     ", isAdmin=" + isAdmin +
                     '}';
         } else {
@@ -127,7 +99,7 @@ public class Person {
                     ", " + getTabsForConsoleOut(email) +
                     "password='" + password + '\'' +
                     ", " + getTabsForConsoleOut(password) +
-                    "age=" + age +
+                    "birthdata=" + birthdata +
                     ", isAdmin=" + isAdmin +
                     '}';
         }

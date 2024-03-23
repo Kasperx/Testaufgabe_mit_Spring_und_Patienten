@@ -77,19 +77,21 @@ public class FrontendController {
         //return "forward:/resources/templates/index.html";
         switch (isAdminAccount(username, pw)) {
             case YES -> {
-                List<Person> personList = filterPersonData(true, personRepository.findAll());
-                model.addAttribute("persons", personList);
+                //List<Person> personList = filterPersonData(true, personRepository.findAll());
+                //model.addAttribute("persons", personList);
+                model.addAttribute("persons", getDataWithoutSensibleInfos(true, personRepository.findAll()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
-                List<Person> personList = filterPersonData(personRepository.findAll());
-                model.addAttribute("persons", personList);
+                //List<Person> personList = filterPersonData(personRepository.findAll());
+                //model.addAttribute("persons", personList);
+                model.addAttribute("persons", getDataWithoutSensibleInfos(personRepository.findByIsAdminFalse()));
                 model.addAttribute("message", IsAdmin.EMPTY_PARAMETER.toString());
             }
             case WRONG_PARAMETER -> {
-                log.error(IsAdmin.WRONG_PARAMETER.toString());
-                List<Person> personList = filterPersonData(personRepository.findAll());
-                model.addAttribute("persons", personList);
+                //log.error(IsAdmin.WRONG_PARAMETER.toString());
+                //List<Person> personList = filterPersonData(personRepository.findAll());
+                model.addAttribute("persons", getDataWithoutSensibleInfos(personRepository.findByIsAdminFalse()));
                 model.addAttribute("message", IsAdmin.WRONG_PARAMETER.toString());
             }
         }
