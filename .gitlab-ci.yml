@@ -135,7 +135,7 @@ deploy-remote-gitlab:
     - echo "gitlab token= $CI_GITLAB_REGISTRY_TOKEN"
     - echo "gitlab pw= $CI_GITLAB_REGISTRY_PW"
     - echo "Preparing deploy to gitlab.com"
-    - 'which docker || ( apt-get update -y && apt-get install docker docker.io -y )'
+    #- 'which docker || ( apt-get update -y && apt-get install docker docker.io -y )'
     #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
     #- docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN # error in pipeline
     #- echo "$gitlab_registry_token" | docker login -u "$CI_GITLAB_REGISTRY_USER" --password-stdin -- "$ci_gitlab_registry"
