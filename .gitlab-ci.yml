@@ -122,8 +122,8 @@ deploy-remote-gitlab:
       - db-data-call
   #image: debian:oldstable
   #image: docker:20-git
-  image: "$DOCKER"
-  #image: "$DEBIAN"
+  #image: "$DOCKER"
+  image: "$DEBIAN"
   when: manual
   #environment:
 #    name: Staging
@@ -145,13 +145,13 @@ deploy-remote-gitlab:
     - docker login "$CI_GITLAB_REGISTRY" -u "$CI_GITLAB_REGISTRY_USER" -p "$CI_GITLAB_REGISTRY_TOKEN"
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
     #- docker build -t my-spring-boot-test .
-    - docker build -t $CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db .
-    - docker push $CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:1"
     #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
     #- docker push $CI_REGISTRY_NAME:$CI_COMMIT_REF_NAME
-    - docker push $CI_GITLAB_REGISTRY/my-spring-boot-test:1
+    #- docker push $CI_GITLAB_REGISTRY/my-spring-boot-test:1
+    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db
 
 .integration-test:
   stage: test
