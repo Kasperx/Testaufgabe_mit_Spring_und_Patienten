@@ -145,6 +145,7 @@ deploy-remote-gitlab:
     - docker login "$CI_GITLAB_REGISTRY" -u "$CI_GITLAB_REGISTRY_USER" -p "$CI_GITLAB_REGISTRY_TOKEN"
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
     #- docker build -t my-spring-boot-test .
+    - eval $(docker -s)
     - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:1"
