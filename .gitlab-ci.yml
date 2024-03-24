@@ -18,6 +18,7 @@ stages:
   - build
   - install
   - test
+  - package
   - deploy
 
 compile:
@@ -48,7 +49,7 @@ install:
 deploy-remote-ssh:
   stage: deploy
   dependencies:
-    - deploy-local
+    - package
   only:
     refs:
       - master
@@ -79,7 +80,7 @@ deploy-remote-ssh:
 deploy-remote-docker-der_staudamm:
   stage: deploy
   dependencies:
-    - deploy-local
+    - package
   only:
     refs:
       - master
@@ -110,7 +111,7 @@ deploy-remote-docker-der_staudamm:
 deploy-remote-gitlab:
   stage: deploy
   dependencies:
-    - deploy-local
+    - package
   only:
     refs:
       - master
@@ -153,8 +154,8 @@ deploy-remote-gitlab:
     paths:
       - target/
 
-deploy-local:
-  stage: deploy
+package:
+  stage: package
   only:
     refs:
       - master
@@ -169,4 +170,23 @@ deploy-local:
       - "target/*.jar"
   script:
     - echo "Deploy to target folder"
-    - "mvn package"
+    - "mvn package $MAVEN_CLI_OPTS"
+
+package_to_docker_image:
+  stage: package
+  image: docker
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
+      - db-data-call
+  dependencies:
+    #- test-with-junit
+    - package
+  artifacts:
+    paths:
+      - "target/*.jar"
+  script:
+    - echo "Create docker image"
+    - docker build --platform linux/amd64 -t my-spring-boot-test ."
