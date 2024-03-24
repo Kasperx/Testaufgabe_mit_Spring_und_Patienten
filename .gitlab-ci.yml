@@ -189,4 +189,4 @@ package_to_docker_image:
       - "target/*.jar"
   script:
     - echo "Create docker image"
-    - docker build --platform linux/amd64 -t my-spring-boot-test ."
+    - docker build --platform linux/amd64 -t my-spring-boot-test .
