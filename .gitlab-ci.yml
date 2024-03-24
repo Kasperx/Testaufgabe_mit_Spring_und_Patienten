@@ -122,13 +122,15 @@ deploy-remote-gitlab:
       - db-data-call
   #image: debian:oldstable
   #image: docker:20-git
-  image: "$DOCKER"
+  #image: "$DOCKER"
+  image: "$DEBIAN"
   when: manual
   #environment:
 #    name: Staging
 #    url: "$URL"
   before_script:
     - echo "Preparing deploy to gitlab.com"
+    - 'which docker || ( apt-get update -y && apt-get install docker docker.io -y )'
     #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
     #- docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN # error in pipeline
     #- echo "$gitlab_registry_token" | docker login -u "$ci_gitlab_registry_user" --password-stdin -- "$ci_gitlab_registry"
