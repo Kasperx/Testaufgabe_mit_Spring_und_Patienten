@@ -175,7 +175,7 @@ package:
     - echo "Deploy to target folder"
     - "mvn package $MAVEN_CLI_OPTS"
 
-package_to_docker_image:
+.package_to_docker_image:
   stage: package
   image: "$DOCKER"
   only:
