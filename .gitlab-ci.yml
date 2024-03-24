@@ -122,8 +122,8 @@ deploy-remote-gitlab:
       - db-data-call
   #image: debian:oldstable
   #image: docker:20-git
-  #image: "$DOCKER"
-  image: "$DEBIAN"
+  image: "$DOCKER"
+  #image: "$DEBIAN"
   when: manual
   #environment:
 #    name: Staging
