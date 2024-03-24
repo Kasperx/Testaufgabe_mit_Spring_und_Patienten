@@ -4,7 +4,7 @@ image: maven:3.8.3-openjdk-17
 variables:
   MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  DOCKER: "docker:24.0.6"
+  DOCKER: "docker:25-cli"
   DEBIAN: "debian:oldstable-20240311-slim"
 
 cache:
@@ -122,8 +122,8 @@ deploy-remote-gitlab:
       - db-data-call
   #image: debian:oldstable
   #image: docker:20-git
-  #image: "$DOCKER"
-  image: "$DEBIAN"
+  image: "$DOCKER"
+  #image: "$DEBIAN"
   when: manual
   #environment:
 #    name: Staging
