@@ -129,6 +129,11 @@ deploy-remote-gitlab:
 #    name: Staging
 #    url: "$URL"
   before_script:
+    - echo "--- Test ---"
+    - echo "gitlab repo= $ci_gitlab_registry"
+    - echo "gitlab username= $ci_gitlab_registry_user"
+    - echo "gitlab token= $gitlab_registry_token"
+    - echo "gitlab pw= $gitlab_registry_pw"
     - echo "Preparing deploy to gitlab.com"
     - 'which docker || ( apt-get update -y && apt-get install docker docker.io -y )'
     #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
@@ -137,7 +142,7 @@ deploy-remote-gitlab:
     #- echo "$gitlab_registry_token" | docker login --password-stdin -- "$ci_gitlab_registry"
     #- docker login $ci_gitlab_registry -u $ci_gitlab_registry_user --password-stdin <<<$gitlab_registry_token
     #- docker login "$ci_gitlab_registry" -u "$ci_gitlab_registry_user" --password-stdin <<<"$gitlab_registry_pw"
-    - docker login "$ci_gitlab_registry" -u "$ci_gitlab_registry_user" -p <<<"$gitlab_registry_token"
+    - docker login "$ci_gitlab_registry" -u "$ci_gitlab_registry_user" -p "$gitlab_registry_token"
     #- docker login $ci_gitlab_registry -u $ci_gitlab_registry_user -p $gitlab_registry_pw
     - docker build -t my-spring-boot-test .
   script:
