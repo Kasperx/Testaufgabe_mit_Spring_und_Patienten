@@ -4,7 +4,7 @@ image: maven:3.8.3-openjdk-17
 variables:
   MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  DOCKER: "docker:25-cli"
+  DOCKER: "docker:26-cli"
   DEBIAN: "debian:oldstable-20240311-slim"
 
 cache:
@@ -146,7 +146,7 @@ deploy-remote-gitlab:
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
     #- docker build -t my-spring-boot-test .
     #- "/etc/init.d/docker start || docker start || service docker start"
-    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test-gitlabci .
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:1"
