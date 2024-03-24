@@ -124,6 +124,10 @@ deploy-remote-gitlab:
   #image: docker:20-git
   image: "$DOCKER"
   #image: "$DEBIAN"
+  services:
+    - name: "$DOCKER"
+      alias: docker
+      entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
   when: manual
   #environment:
 #    name: Staging
