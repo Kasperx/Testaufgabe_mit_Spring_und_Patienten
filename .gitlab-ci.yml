@@ -38,11 +38,50 @@ install:
     - echo "Compile java code"
     - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
+package:
+  stage: package
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
+      - db-data-call
+  dependencies:
+    #- test-with-junit
+    - install
+  artifacts:
+    paths:
+      - "target/*.jar"
+  script:
+    - echo "Deploy to target folder"
+    - "mvn package $MAVEN_CLI_OPTS"
+
+.package_to_docker_image:
+  stage: package
+  image: "$DOCKER"
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
+      - db-data-call
+  dependencies:
+    #- test-with-junit
+    - package
+  artifacts:
+    paths:
+      - "target/*.jar"
+  script:
+    - echo "Create docker image"
+    #- docker build --platform linux/amd64 -t my-spring-boot-test .
+    #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
+    - docker build -t my-spring-boot-test .
+
 .test-with-junit:
   stage: test
   script:
     - echo "Run tests (after compile)"
-    - "mvn compile test $MAVEN_CLI_OPTS"
+    - "mvn test $MAVEN_CLI_OPTS"
   dependencies:
     - integration-test
   artifacts:
@@ -79,37 +118,6 @@ deploy-remote-ssh:
     - ssh -o StrictHostKeyChecking=no web@${URL}" 'rm -rf ~/web/*'
     #- ssh test@$url -c \"rm web/*\"
     - scp target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@${URL}:/web/
-
-deploy-remote-docker-der_staudamm:
-  stage: deploy
-  dependencies:
-    - package
-  only:
-    refs:
-      - master
-      - main
-      - deploy-remote-ssh
-      - db-data-call
-  #image: debian:oldstable
-  #image: docker:20-git
-  image: "$DOCKER"
-  when: manual
-  #environment:
-#    name: Staging
-#    url: "$URL"
-  before_script:
-    - echo "Preparing deploy to docker.com @ $CI_REGISTRY"
-    #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
-    #- docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN # error in pipeline
-    - docker login -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN
-  script:
-    - echo "Preparing deploy to docker.com -> $CI_REGISTRY_USER/$CI_REGISTRY:1"
-    - >
-      docker build
-      --tag $CI_REGISTRY:1
-      .
-    #- docker push $CI_REGISTRY_NAME:$CI_COMMIT_REF_NAME
-    - docker push $CI_REGISTRY:1
 
 deploy-remote-gitlab:
   stage: deploy
@@ -206,45 +214,6 @@ deploy-remote-gitlab:
   artifacts:
     paths:
       - target/
-
-package:
-  stage: package
-  only:
-    refs:
-      - master
-      - main
-      - deploy-remote-ssh
-      - db-data-call
-  dependencies:
-    #- test-with-junit
-    - install
-  artifacts:
-    paths:
-      - "target/*.jar"
-  script:
-    - echo "Deploy to target folder"
-    - "mvn package $MAVEN_CLI_OPTS"
-
-.package_to_docker_image:
-  stage: package
-  image: "$DOCKER"
-  only:
-    refs:
-      - master
-      - main
-      - deploy-remote-ssh
-      - db-data-call
-  dependencies:
-    #- test-with-junit
-    - package
-  artifacts:
-    paths:
-      - "target/*.jar"
-  script:
-    - echo "Create docker image"
-    #- docker build --platform linux/amd64 -t my-spring-boot-test .
-    #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
-    - docker build -t my-spring-boot-test .
 
 move_to_remote:
   stage: publish
