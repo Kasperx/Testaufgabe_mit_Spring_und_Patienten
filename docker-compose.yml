@@ -1,6 +1,7 @@
+version: "3.4"
 services:
   web:
-    image: java-spring-boot-test
+    image: registry.gitlab.com/kasperix/java-with-spring-boot-server-with_db:test.0.1
     deploy:
       update_config:
         parallelism: 1
