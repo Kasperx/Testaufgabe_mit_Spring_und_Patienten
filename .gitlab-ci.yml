@@ -178,7 +178,7 @@ deploy-remote-gitlab:
 #    - name: "$DOCKER"
 #      alias: docker
 #      entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
-  #when: manual
+  when: manual
   #environment:
 #    name: Staging
 #    url: "$URL"
