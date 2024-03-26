@@ -153,8 +153,8 @@ deploy-remote-gitlab:
     #- "/etc/init.d/docker start || docker start || service docker start"
     - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA'"
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
-    - docker build -t java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA .
-    #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
+    #- docker build -t java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA .
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_SHORT_SHA" .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:$CI_COMMIT_SHORT_SHA"
     #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
