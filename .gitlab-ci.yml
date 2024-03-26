@@ -151,16 +151,16 @@ deploy-remote-gitlab:
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
     #- docker build -t my-spring-boot-test .
     #- "/etc/init.d/docker start || docker start || service docker start"
-    - echo "Docker build '$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH'"
+    - echo "Docker build '$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA'"
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
-    - docker build -t java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
+    - docker build -t java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA .
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
   script:
-    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:1"
+    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:CI_COMMIT_SHORT_SHA"
     #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
     #- docker push $CI_REGISTRY_NAME:$CI_COMMIT_REF_NAME
     #- docker push $CI_GITLAB_REGISTRY/my-spring-boot-test:1
-    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test-gitlabci
+    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"
 
 deploy-remote-docker:
@@ -194,12 +194,12 @@ deploy-remote-docker:
     - echo "Preparing deploy to DOCKER.com"
     - echo "Docker login to $CI_DOCKER_REGISTRY"
     - docker login "$CI_DOCKER_REGISTRY" -u "$CI_DOCKER_REGISTRY_USER" -p "$CI_DOCKER_REGISTRY_TOKEN"
-    - echo "Docker build '$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH'"
+    - echo "Docker build '$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA'"
     #- docker build -t "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
-    - docker build -t java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
+    - docker build -t java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA .
   script:
-    - echo "Preparing deploy to $CI_DOCKER_REGISTRY/my-spring-boot-test:1"
-    - docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:test-gitlabci
+    - echo "Preparing deploy to $CI_DOCKER_REGISTRY/my-spring-boot-test:CI_COMMIT_SHORT_SHA"
+    - docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:CI_COMMIT_SHORT_SHA
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"
 
 .integration-test:
