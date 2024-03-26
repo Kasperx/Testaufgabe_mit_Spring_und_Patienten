@@ -139,28 +139,14 @@ deploy-remote-gitlab:
     - echo "gitlab token= $CI_GITLAB_REGISTRY_TOKEN"
     - echo "gitlab pw= $CI_GITLAB_REGISTRY_PW"
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY"
-    #- 'which docker || ( apt-get update -y && apt-get install docker docker.io -y )'
-    #- echo -n $CI_REGISTRY_PW | docker login -u $CI_REGISTRY_USER -- password-stdin $CI_REGISTRY
-    #- docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin <<<$CI_REGISTRY_TOKEN # error in pipeline
-    #- echo "$gitlab_registry_token" | docker login -u "$CI_GITLAB_REGISTRY_USER" --password-stdin -- "$ci_gitlab_registry"
-    #- echo "$gitlab_registry_token" | docker login --password-stdin -- "$CI_GITLAB_REGISTRY"
-    #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER --password-stdin <<<$CI_GITLAB_REGISTRY_TOKEN
-    #- docker login "$CI_GITLAB_REGISTRY" -u "$CI_GITLAB_REGISTRY_USER" --password-stdin <<<"$CI_GITLAB_REGISTRY_PW"
     - echo "Docker login to $CI_GITLAB_REGISTRY"
     - docker login "$CI_GITLAB_REGISTRY" -u "$CI_GITLAB_REGISTRY_USER" -p "$CI_GITLAB_REGISTRY_TOKEN"
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
-    #- docker build -t my-spring-boot-test .
-    #- "/etc/init.d/docker start || docker start || service docker start"
     - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA'"
-    #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH" .
-    #- docker build -t java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA .
-    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_SHORT_SHA" .
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA" .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:$CI_COMMIT_SHORT_SHA"
-    #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
-    #- docker push $CI_REGISTRY_NAME:$CI_COMMIT_REF_NAME
-    #- docker push $CI_GITLAB_REGISTRY/my-spring-boot-test:1
-    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA
+    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA"
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"
 
 .deploy-remote-docker:
