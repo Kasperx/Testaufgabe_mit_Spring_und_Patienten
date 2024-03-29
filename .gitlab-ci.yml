@@ -231,7 +231,10 @@ upload-to-cloud-and-start:
       - deploy-remote-ssh
       - db-data-call
   variables:
-    DOCKER_HOST: ssh://web@$URL
+    DOCKER_HOST: ssh://web@"$URL"
+  services:
+    - name: "$DOCKER"
+      alias: docker
   #when: manual
   before_script:
     - apk update && apk add openssh-client bash
