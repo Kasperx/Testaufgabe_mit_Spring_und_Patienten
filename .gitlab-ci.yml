@@ -250,8 +250,8 @@ upload-to-cloud-and-start:
     - echo "--- Test ---"
     - echo "ssh key ..."
     - echo "Content= $(cat ~/.ssh/id_rsa)"
-    - ls ~/.ssh/id_rsa"
-    - cat ~/.ssh/id_rsa"
+    - ls ~/.ssh/id_rsa
+    - cat ~/.ssh/id_rsa
     - echo "--- Test end ---"
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
