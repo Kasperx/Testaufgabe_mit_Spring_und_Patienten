@@ -7,7 +7,6 @@ variables:
   #DOCKER: "docker:26-cli"
   DOCKER: "docker:23.0.1-dind"
   DEBIAN: "debian:oldstable-20240311-slim"
-  #DOCKER-TAG: "$CI_COMMIT_BRANCH"_test.0.1 # does not work, variable (content) not available at this point
 
 cache:
   paths:
@@ -161,7 +160,7 @@ create-image-and-upload-to-gitlab.com:
     - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:test"
     - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test .
   script:
-    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:$docker-tag"
+    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:test"
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA"
     - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test
 
