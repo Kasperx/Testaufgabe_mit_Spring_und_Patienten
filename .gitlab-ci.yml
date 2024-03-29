@@ -6,6 +6,7 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   DOCKER: "docker:26-cli"
   DEBIAN: "debian:oldstable-20240311-slim"
+  docker-tag: "$CI_COMMIT_BRANCH_test.0.1"
 
 cache:
   paths:
@@ -22,7 +23,7 @@ stages:
   - test
   - package
   - deploy
-  - publish
+  - start
 
 compile:
   stage: build
@@ -119,7 +120,7 @@ deploy-remote-ssh:
     #- ssh test@$url -c \"rm web/*\"
     - scp target/Learning_java_springboot_minimal_with_database-0.0.1-SNAPSHOT-spring-boot.jar web@${URL}:/web/
 
-deploy-remote-gitlab:
+create-image-and-upload-to-gitlab.com:
   stage: deploy
   dependencies:
     - package
@@ -137,7 +138,7 @@ deploy-remote-gitlab:
 #    - name: "$DOCKER"
 #      alias: docker
 #      entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
-  when: manual
+  #when: manual
   services:
     - name: docker:23.0.1-dind
       alias: docker
@@ -153,14 +154,14 @@ deploy-remote-gitlab:
     #- docker login $CI_GITLAB_REGISTRY -u $CI_GITLAB_REGISTRY_USER -p $CI_GITLAB_REGISTRY_PW
     #- echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA'"
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA" .
-    - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:test.0.1"
-    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test.0.1 .
+    - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$docker-tag"
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:$docker-tag .
   script:
-    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:test.0.1"
+    - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:$docker-tag"
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA"
-    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:test.0.1
+    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:$docker-tag
 
-.deploy-remote-docker:
+.create-image-and-upload-to-docker.com:
   stage: deploy
   dependencies:
     - package
@@ -215,11 +216,11 @@ deploy-remote-gitlab:
     paths:
       - target/
 
-move_to_remote:
+upload-to-cloud-and-start:
   stage: publish
   image: $DOCKER
   dependencies:
-    - deploy-remote-gitlab
+    - create-image-and-upload-to-gitlab.com
   only:
     refs:
       - master
@@ -232,10 +233,19 @@ move_to_remote:
   before_script:
     - apk update && apk add openssh-client bash
     - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    # test original
+    #- echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    #- chmod 600 ~/.ssh/id_rsa
+    #- eval "$(ssh-agent -s)"
+    #- ssh-add ~/.ssh/id_rsa
+    # /test
+    # test
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
+    #- echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add
+    # /test
     - ssh-keyscan -H $URL >> ~/.ssh/known_hosts
     #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - echo "Stopping active container on $URL"
