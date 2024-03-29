@@ -4,7 +4,8 @@ image: maven:3.8.3-openjdk-17
 variables:
   MAVEN_OPTS: "-Djava.awt.headless=true -Dmaven.repo.local=./.m2/repository"
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
-  DOCKER: "docker:26-cli"
+  #DOCKER: "docker:26-cli"
+  DOCKER: "docker:23.0.1-dind"
   DEBIAN: "debian:oldstable-20240311-slim"
   #DOCKER-TAG: "$CI_COMMIT_BRANCH"_test.0.1 # does not work, variable (content) not available at this point
 
