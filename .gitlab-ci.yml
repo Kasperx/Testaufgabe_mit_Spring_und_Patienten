@@ -138,7 +138,8 @@ create-image-and-upload-to-gitlab.com:
 #      entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
   #when: manual
   services:
-    - name: docker:23.0.1-dind
+    #- name: docker:23.0.1-dind
+    - name: "$DOCKER"
       alias: docker
   variables:
     DOCKER_TAG: "$CI_COMMIT_BRANCH"
