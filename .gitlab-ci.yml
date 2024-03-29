@@ -249,6 +249,7 @@ upload-to-cloud-and-start:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - echo "--- Test ---"
     - echo "ssh key ..."
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r'
     - echo "Content= $(cat ~/.ssh/id_rsa)"
     - ls ~/.ssh/id_rsa
     - cat ~/.ssh/id_rsa
