@@ -257,9 +257,12 @@ upload-to-cloud-and-start:
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
-    #- echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - touch ~/.ssh/config
+    - touch ~/.ssh/known_hosts
     # /test
     - ssh-keyscan -H $URL >> ~/.ssh/known_hosts
+    - '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - echo "Stopping active container on $URL"
     - docker stack remove java-with-spring-boot-server-with_db
