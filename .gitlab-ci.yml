@@ -244,6 +244,9 @@ upload-to-cloud-and-start:
     # /test
     # test
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - echo "--- Test ---"
+    - echo "ssh key= cat ~/.ssh/id_rsa"
+    - echo "--- Test end ---"
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
