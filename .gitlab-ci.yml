@@ -6,7 +6,7 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   DOCKER: "docker:26-cli"
   DEBIAN: "debian:oldstable-20240311-slim"
-  docker-tag: "$CI_COMMIT_BRANCH_test.0.1"
+  docker-tag: "$CI_COMMIT_BRANCH_test-0.1"
 
 cache:
   paths:
@@ -155,11 +155,11 @@ create-image-and-upload-to-gitlab.com:
     #- echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA'"
     #- docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA" .
     - echo "Docker build '$CI_GITLAB_REGISTRY/$CI_GITLAB_REGISTRY_USER/java-with-spring-boot-server-with_db:$docker-tag"
-    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:$docker-tag .
+    - docker build -t "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$docker-tag" .
   script:
     - echo "Preparing deploy to $CI_GITLAB_REGISTRY/my-spring-boot-test:$docker-tag"
     #- docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$CI_COMMIT_BRANCH"_"$CI_COMMIT_SHORT_SHA"
-    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:$docker-tag
+    - docker push "$CI_GITLAB_REGISTRY"/"$CI_GITLAB_REGISTRY_USER"/java-with-spring-boot-server-with_db:"$docker-tag"
 
 .create-image-and-upload-to-docker.com:
   stage: deploy
