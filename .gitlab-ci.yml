@@ -6,7 +6,7 @@ variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version"
   DOCKER: "docker:26-cli"
   DEBIAN: "debian:oldstable-20240311-slim"
-  DOCKER-TAG: "$CI_COMMIT_BRANCH"_test.0.1
+  #DOCKER-TAG: "$CI_COMMIT_BRANCH"_test.0.1 # does not work, variable (content) not available at this point
 
 cache:
   paths:
