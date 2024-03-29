@@ -217,7 +217,7 @@ create-image-and-upload-to-gitlab.com:
       - target/
 
 upload-to-cloud-and-start:
-  stage: publish
+  stage: start
   image: $DOCKER
   dependencies:
     - create-image-and-upload-to-gitlab.com
