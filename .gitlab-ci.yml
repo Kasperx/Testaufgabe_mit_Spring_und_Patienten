@@ -48,8 +48,8 @@ package:
       - deploy-remote-ssh
       - db-data-call
   dependencies:
-    #- test-with-junit
-    - install
+    - test-with-junit
+    #- install
   artifacts:
     paths:
       - "target/*.jar"
@@ -78,7 +78,7 @@ package:
     #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
     - docker build -t my-spring-boot-test .
 
-.test-with-junit:
+test-with-junit:
   stage: test
   script:
     - echo "Run tests (after compile)"
@@ -89,7 +89,7 @@ package:
     paths:
       - target/
 
-deploy-remote-ssh:
+.deploy-remote-ssh:
   stage: deploy
   dependencies:
     - package
@@ -123,7 +123,8 @@ deploy-remote-ssh:
 create-image-and-upload-to-gitlab.com:
   stage: deploy
   dependencies:
-    - package
+    #- package
+  - test-with-junit
   only:
     refs:
       - master
@@ -136,7 +137,7 @@ create-image-and-upload-to-gitlab.com:
 #    - name: "$DOCKER"
 #      alias: docker
 #      entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
-  #when: manual
+  when: manual
   services:
     #- name: docker:23.0.1-dind
     - name: "$DOCKER"
@@ -203,7 +204,7 @@ create-image-and-upload-to-gitlab.com:
     #- docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA
     - docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:test.0.1
 
-.integration-test:
+integration-test:
   stage: test
   only:
     refs:
@@ -235,7 +236,7 @@ upload-to-cloud-and-start:
   services:
     - name: "$DOCKER"
       alias: docker
-  #when: manual
+  when: manual
   before_script:
     - apk update && apk add openssh-client bash
     - mkdir -p ~/.ssh
