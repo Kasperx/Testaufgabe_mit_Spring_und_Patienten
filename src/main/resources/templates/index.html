@@ -30,6 +30,7 @@
     <h4>
         <div class="text-center">
             <ul th:if="${persons.size() > 0} and ${persons[0].email != null}">
+            </ul>
             <ul>
                 <button
                         type="button"
@@ -41,6 +42,7 @@
                 <a class="btn btn-info" th:href="@{/}">Zeige Daten</a>
             </ul>
             <ul th:if="${persons.size() > 0} and ${persons[0].email != null}">
+            </ul>
             <ul>
                 <a class="btn btn-info" th:href="@{/createMoreData(username='admin',pw='secret')}">Zeige alle Daten</a>
             </ul>
