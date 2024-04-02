@@ -21,7 +21,6 @@ stages:
   - build
   - install
   - test
-  - package
   - deploy
   - start
 
@@ -40,7 +39,7 @@ install:
     - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
 package:
-  stage: package
+  stage: install
   only:
     refs:
       - master
@@ -77,6 +76,23 @@ package:
     #- docker build --platform linux/amd64 -t my-spring-boot-test .
     #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
     - docker build -t my-spring-boot-test .
+
+integration-test:
+  stage: test
+  only:
+    refs:
+      - master
+      - main
+      - deploy-remote-ssh
+      - db-data-call
+  dependencies:
+    #- install
+    - package
+  script:
+    - "mvn verify $MAVEN_CLI_OPTS"
+  artifacts:
+    paths:
+      - target/
 
 test-with-junit:
   stage: test
@@ -203,23 +219,6 @@ create-image-and-upload-to-gitlab.com:
     - echo "Preparing deploy to $CI_DOCKER_REGISTRY/my-spring-boot-test:$CI_COMMIT_SHORT_SHA"
     #- docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:$CI_COMMIT_SHORT_SHA
     - docker push "$CI_DOCKER_REGISTRY"/"$CI_DOCKER_REGISTRY_USER"/java-with-spring-boot-server-with_db:test.0.1
-
-integration-test:
-  stage: test
-  only:
-    refs:
-      - master
-      - main
-      - deploy-remote-ssh
-      - db-data-call
-  dependencies:
-    #- install
-    - package
-  script:
-    - "mvn verify $MAVEN_CLI_OPTS"
-  artifacts:
-    paths:
-      - target/
 
 upload-to-cloud-and-start:
   stage: start
