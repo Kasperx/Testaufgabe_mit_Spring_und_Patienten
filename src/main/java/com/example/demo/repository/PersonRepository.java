@@ -41,5 +41,5 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     List<Person> findByEmailStartsWith(String emailaddress);
     List<Person> findByFirstname(String firstname);
     List<Person> findByLastname(String lastname);
-    List<Person> findByBirthdata(String birthdate);
+    List<Person> findByBirthdate(String birthdate);
 }
