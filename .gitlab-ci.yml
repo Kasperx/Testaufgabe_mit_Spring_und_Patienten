@@ -47,8 +47,8 @@ package:
       - deploy-remote-ssh
       - db-data-call
   dependencies:
-    - test-with-junit
-    #- install
+    #- test-with-junit
+    - install
   artifacts:
     paths:
       - "target/*.jar"
