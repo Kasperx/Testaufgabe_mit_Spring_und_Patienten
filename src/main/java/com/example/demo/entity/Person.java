@@ -1,13 +1,12 @@
 package com.example.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import static com.example.demo.service.PersonService.getPasswordString;
 import static com.example.demo.service.PersonService.getTabsForConsoleOut;
 
 @Entity
@@ -25,25 +24,25 @@ public class Person {
     int id;
 
     public Person(String firstName, String lastName, String email, String password, String birthdata, boolean isAdmin) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.firstname = firstName;
+        this.lastname = lastName;
         this.email = email;
         this.password = password;
-        this.birthdata = birthdata;
+        this.birthdate = birthdata;
         this.isAdmin = isAdmin;
     }
 
     public Person(String firstName, String lastName, String birthdata) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthdata = birthdata;
+        this.firstname = firstName;
+        this.lastname = lastName;
+        this.birthdate = birthdata;
     }
 
     @Column(name = "FIRSTNAME")
-    String firstName;
+    String firstname;
 
     @Column(name = "LASTNAME")
-    String lastName;
+    String lastname;
 
     @Column(name = "EMAIL")
     String email;
@@ -51,9 +50,9 @@ public class Person {
     @Column(name = "PASSWORD")
     String password;
 
-    @DateTimeFormat(pattern = "dd:MM:yyyy")
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
     @Column(name = "BIRTHDATE")
-    String birthdata;
+    String birthdate;
 
     @Column(name = "ISADMIN")
     boolean isAdmin;
@@ -77,29 +76,31 @@ public class Person {
         if(showLengthOfText){
             return "Person{" +
                     "id=" + id +
-                    ", firstName(" + firstName.length() + ")='" + firstName + '\'' +
-                    ", " + getTabsForConsoleOut(firstName) +
-                    "lastName(" + lastName.length() + ")='" + lastName + '\'' +
-                    ", " + getTabsForConsoleOut(lastName) +
+                    ", firstName(" + firstname.length() + ")='" + firstname + '\'' +
+                    ", " + getTabsForConsoleOut(firstname) +
+                    "lastName(" + lastname.length() + ")='" + lastname + '\'' +
+                    ", " + getTabsForConsoleOut(lastname) +
                     "email(" + email.length() + ")='" + email + '\'' +
                     ", " + getTabsForConsoleOut(email) +
-                    "password(" + password.length() + ")='" + password + '\'' +
-                    ", " + getTabsForConsoleOut(password) +
-                    "birthdata=" + birthdata +
+                    "password(" + getPasswordString(password).length() + ")='" + getPasswordString(password) + '\'' +
+                    ", " + getTabsForConsoleOut(
+                            getPasswordString(password)) +
+                    "birthdata=" + birthdate +
                     ", isAdmin=" + isAdmin +
                     '}';
         } else {
             return "Person{" +
                     "id=" + id +
-                    ", firstName='" + firstName + '\'' +
-                    ", " + getTabsForConsoleOut(firstName) +
-                    "lastName='" + lastName + '\'' +
-                    ", " + getTabsForConsoleOut(lastName) +
+                    ", firstName='" + firstname + '\'' +
+                    ", " + getTabsForConsoleOut(firstname) +
+                    "lastName='" + lastname + '\'' +
+                    ", " + getTabsForConsoleOut(lastname) +
                     "email='" + email + '\'' +
                     ", " + getTabsForConsoleOut(email) +
-                    "password='" + password + '\'' +
-                    ", " + getTabsForConsoleOut(password) +
-                    "birthdata=" + birthdata +
+                    "password='" + getPasswordString(password) + '\'' +
+                    ", " + getTabsForConsoleOut(
+                        getPasswordString(password)) +
+                    "birthdata=" + birthdate +
                     ", isAdmin=" + isAdmin +
                     '}';
         }

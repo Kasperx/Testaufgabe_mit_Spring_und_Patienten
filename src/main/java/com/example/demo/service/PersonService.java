@@ -8,23 +8,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
-import java.security.InvalidParameterException;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Configuration
@@ -37,6 +28,7 @@ public class PersonService implements WebMvcConfigurer {
     private static final Logger log = LoggerFactory.getLogger(PersonService.class);
     public static final String databaseName = "PERSON";
     public static final boolean careAboutPersonalData = true;
+    public static final boolean createDBDataOnStartup = true;
 
     public static enum IsAdmin {
         YES(""),
@@ -72,16 +64,16 @@ public class PersonService implements WebMvcConfigurer {
             Person person = new Person();
             for(Object temp: obj.entrySet()) {
                 if(temp.toString().split("=")[0].equalsIgnoreCase("FIRSTNAME")) {
-                    person.setFirstName(
+                    person.setFirstname(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("LASTNAME")) {
-                    person.setLastName(
+                    person.setLastname(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("EMAIL")) {
                     person.setEmail(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("AGE")) {
-                    person.setBirthdata(
+                    person.setBirthdate(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("PASSWORD")) {
                     if(careAboutPersonalData){
@@ -98,21 +90,36 @@ public class PersonService implements WebMvcConfigurer {
         }
         return personListTemp;
     }
-
-
-
+    /*public String getPasswordString(Person person){
+        return careAboutPersonalData
+                ? "***"
+                : StringUtils.isBlank(person.getPassword())
+                        ? ""
+                        : person.getPassword();
+    }
+     */
+    public static String getPasswordString(Person person){
+        return getPasswordString(person.getPassword());
+    }
+    public static String getPasswordString(String password){
+        return careAboutPersonalData
+                ? "***"
+                : StringUtils.isBlank(password)
+                        ? ""
+                        : password;
+    }
     public static List<Person> convertObjectToList (Iterable<Person> personIterable){
         List<Person> personListTemp = new ArrayList<>();
         for(Person temp: personIterable){
             Person person = new Person();
-            person.setFirstName(
-                    temp.getFirstName());
-            person.setLastName(
-                    temp.getLastName());
+            person.setFirstname(
+                    temp.getFirstname());
+            person.setLastname(
+                    temp.getLastname());
             person.setEmail(
                     temp.getEmail());
-            person.setBirthdata(
-                    temp.getBirthdata());
+            person.setBirthdate(
+                    temp.getBirthdate());
             if(careAboutPersonalData){
                     person.setPassword("***");
             } else {
@@ -136,9 +143,9 @@ public class PersonService implements WebMvcConfigurer {
         }
         return columns;
     }
+    private static final int countCharsFor1Tab = 5;
+    private static final int countCharsFor2Tabs = 10;
     public static String getTabsForConsoleOut(String text){
-        final int countCharsFor1Tab = 6;
-        final int countCharsFor2Tabs = 10;
         if(StringUtils.isBlank(text)){
             return "";
         } else {
@@ -276,10 +283,13 @@ public class PersonService implements WebMvcConfigurer {
             for (Person person : personList) {
                 person.setPassword("");
                 person.setEmail("");
-                person.setBirthdata("");
+                person.setBirthdate("");
                 personList1.add(person);
             }
             return personList1;
         }
     }
+    /*public static Map<String, Boolean> showAllData (boolean isAdmin){
+        return Map.of("showAllData", isAdmin);
+    }*/
 }

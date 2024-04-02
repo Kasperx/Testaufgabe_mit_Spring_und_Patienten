@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +28,7 @@ public class TestPersonService {
     ResultActions resultActions;
 
     @BeforeTestClass
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
     public void start(){
         try {
             resultActions = mockMvc
