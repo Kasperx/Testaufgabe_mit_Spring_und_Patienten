@@ -213,7 +213,8 @@ integration-test:
       - deploy-remote-ssh
       - db-data-call
   dependencies:
-    - install
+    #- install
+    - package
   script:
     - "mvn verify $MAVEN_CLI_OPTS"
   artifacts:
