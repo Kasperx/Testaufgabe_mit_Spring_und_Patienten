@@ -2,7 +2,7 @@ version: "3.4"
 services:
   web:
 #    image: "registry.gitlab.com/kasperix/java-with-spring-boot-server-with_db:deploy-remote-ssh_test-0.1"
-    image: "registry.gitlab.com/kasperix/java-with-spring-boot-server-with_db"
+    image: "registry.gitlab.com/kasperix/java-with-spring-boot-server-with_db:test"
     deploy:
       update_config:
         parallelism: 1
