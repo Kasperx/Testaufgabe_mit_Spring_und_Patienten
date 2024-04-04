@@ -56,28 +56,7 @@ package:
     - echo "Deploy to target folder"
     - "mvn package $MAVEN_CLI_OPTS"
 
-.package_to_docker_image:
-  stage: package
-  image: "$DOCKER"
-  only:
-    refs:
-      - master
-      - main
-      - deploy-remote-ssh
-      - db-data-call
-  dependencies:
-    #- test-with-junit
-    - package
-  artifacts:
-    paths:
-      - "target/*.jar"
-  script:
-    - echo "Create docker image"
-    #- docker build --platform linux/amd64 -t my-spring-boot-test .
-    #- docker build -t $ci_gitlab_registry/my-spring-boot-test:1 .
-    - docker build -t my-spring-boot-test .
-
-integration-test:
+.integration-test:
   stage: test
   only:
     refs:
@@ -94,7 +73,7 @@ integration-test:
     paths:
       - target/
 
-test-with-junit:
+.test-with-junit:
   stage: test
   script:
     - echo "Run tests (after compile)"
@@ -139,8 +118,8 @@ test-with-junit:
 create-image-and-upload-to-gitlab.com:
   stage: deploy
   dependencies:
-    #- package
-  - test-with-junit
+    - package
+    #- test-with-junit
   only:
     refs:
       - master
@@ -255,7 +234,8 @@ upload-to-cloud-and-start:
     #- docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     #- echo "Stopping active container on $URL"
     #- docker stack remove java-with-spring-boot-server-with_db
+    - export DOCKER_HOST=ssh://web@$URL
   script:
     - echo "Upload and start image to $URL"
     #- docker stack deploy -c docker-compose.yml $CI_DOCKER_REMOTE_USER:$URL
-    - docker stack deploy -c docker-compose.yml
+    - docker stack deploy -c docker-compose.yml java-test
