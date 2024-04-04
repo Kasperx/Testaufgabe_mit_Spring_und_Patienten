@@ -54,7 +54,7 @@ package:
       - "target/*.jar"
   script:
     - echo "Deploy to target folder"
-    - "mvn package $MAVEN_CLI_OPTS"
+    - "mvn package -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
 .integration-test:
   stage: test
