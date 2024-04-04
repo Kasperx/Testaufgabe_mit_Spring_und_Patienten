@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
@@ -18,17 +19,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Configuration
+//@Configuration
 //@EnableWebMvc
+@Service
 public class PersonService implements WebMvcConfigurer {
 
     public static final String MESSAGE_ERROR_WRONG_PARAMETERS = "ERROR: Wrong parameters for admin account.";
     public static final String MESSAGE_ERROR_EMPTY_PARAMETERS = "ERROR: Empty parameters for admin account.";
     public static final String TEXT_EMAIL_ADDRESS_FOR_PERSON = "@gmail.com";
     private static final Logger log = LoggerFactory.getLogger(PersonService.class);
-    public static final String databaseName = "PERSON";
-    public static final boolean careAboutPersonalData = true;
-    public static final boolean createDBDataOnStartup = true;
+    public static final String DATABASE_NAME = "PERSON";
+    public static final String NAME_FOR_MODEL_DATA = "persons";
+    public static final String NAME_FOR_MODEL_MESSAGE = "message";
+    public static final String NAME_FOR_MODEL_PERMISSION = "showAllData";
+    public static final boolean CARE_ABOUT_PERSONAL_DATA = true;
+    public static final boolean CREATE_DB_DATA_ON_STARTUP = true;
+    private final static String DATA_FOR_TEST_FIRSTNAME = "Julius";
+    private final static String DATA_FOR_TEST_LASTNAME = "Medikus";
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMDAY = 6;
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH = 6;
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR = 2000;
+    private final static String DATA_FOR_TEST_ADMIN_FIRSTNAME = "Amanda";
+    private final static String DATA_FOR_TEST_ADMIN_LASTNAME = "Kambus";
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY = 20;
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
 
     public static enum IsAdmin {
         YES(""),
@@ -76,7 +91,7 @@ public class PersonService implements WebMvcConfigurer {
                     person.setBirthdate(
                             temp.toString().split("=")[1]);
                 } else if(temp.toString().split("=")[0].equalsIgnoreCase("PASSWORD")) {
-                    if(careAboutPersonalData){
+                    if(CARE_ABOUT_PERSONAL_DATA){
                         person.setPassword("***");
                     } else {
                         person.setPassword(
@@ -102,7 +117,7 @@ public class PersonService implements WebMvcConfigurer {
         return getPasswordString(person.getPassword());
     }
     public static String getPasswordString(String password){
-        return careAboutPersonalData
+        return CARE_ABOUT_PERSONAL_DATA
                 ? "***"
                 : StringUtils.isBlank(password)
                         ? ""
@@ -120,7 +135,7 @@ public class PersonService implements WebMvcConfigurer {
                     temp.getEmail());
             person.setBirthdate(
                     temp.getBirthdate());
-            if(careAboutPersonalData){
+            if(CARE_ABOUT_PERSONAL_DATA){
                     person.setPassword("***");
             } else {
                     person.setPassword(
@@ -158,9 +173,17 @@ public class PersonService implements WebMvcConfigurer {
             }
         }
     }
+    private final static boolean CREATE_DATA_FOR_TEST = true;
     //private static final String pathToWebFiles = "/resources/webapp";
     public static List<Person> createNewDataWithAdmin() {
         List<Person> personList = new ArrayList<>();
+        if(CREATE_DATA_FOR_TEST) {
+            // Create person with specific data for test (test with random data is difficult)
+            personList.add(getNewPersonForTest(false));
+            // Create person with specific data for test (test with random data is difficult)
+            personList.add(getNewPersonForTest(true));
+            COUNT_PERSON_DATA = COUNT_PERSON_DATA - 2;
+        }
         // Create admin person
         log.info("Creating data for admin.");
         personList.add(getNewPerson(true));
@@ -169,15 +192,15 @@ public class PersonService implements WebMvcConfigurer {
         log.info("Creating "+personList.size()+" data for persons.");
         return personList;
     }
-    private final static int countPersonData = 10;
+    private static int COUNT_PERSON_DATA = 10;
     public static List<Person> createNewData() {
-        return createNewData(countPersonData);
+        return createNewData(COUNT_PERSON_DATA);
     }
-    private final static boolean haveMoreThan1Admin = true;
+    private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
     public static List<Person> createNewData(int countPersonData) {
         List<Person> personList = new ArrayList<>();
         Person person = null;
-        if(haveMoreThan1Admin) {
+        if(HAVE_MORE_THAN_1_ADMIN && ! CREATE_DATA_FOR_TEST) {
             // Create another admin account with random data
             person = getNewPerson(true);
             log.info("Creating data for random person. [" + person.toString() + "]");
@@ -191,6 +214,16 @@ public class PersonService implements WebMvcConfigurer {
         }
         return personList;
     }
+    public static List<Person> createNewDataForTest() {
+        List<Person> personList = new ArrayList<>();
+        Person person = getNewPersonForTest(true);
+        log.info("Creating data for test person 1. ["+person.toString()+"]");
+        personList.add(person);
+        person = getNewPersonForTest(false);
+        log.info("Creating data for test person 2. ["+person.toString()+"]");
+        personList.add(person);
+        return personList;
+    }
 
     static Person getNewPerson () {
         return getNewPerson(false);
@@ -199,23 +232,46 @@ public class PersonService implements WebMvcConfigurer {
     private final static LocalDate date = LocalDate.now(ZoneId.of("Europe/Berlin"));
     static Person getNewPerson (boolean isAdmin) {
         Faker faker = new Faker();
-        String firstName = faker.name().firstName();
-        String lastName = faker.name().lastName();
-        // test
+        String firstname = faker.name().firstName();
+        String lastname = faker.name().lastName();
         int randomDay = ThreadLocalRandom.current().nextInt(1, 30 + 1);
         int randomMonth = ThreadLocalRandom.current().nextInt(1, 12 + 1);
         int randomYear = LocalDate.now().getYear() - ThreadLocalRandom.current().nextInt(1, 100 + 1);
-        String birtdata = LocalDate.of(randomYear, randomMonth, randomDay)
+        String birthdate = LocalDate.of(randomYear, randomMonth, randomDay)
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        // test
         return new Person(
-                firstName,
-                lastName,
-                firstName.charAt(0) + "." + lastName + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                firstname,
+                lastname,
+                firstname.charAt(0) + "." + lastname + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                 RandomStringUtils.random(10, true, true),
-                birtdata,
+                birthdate,
                 isAdmin
         );
+    }
+    static Person getNewPersonForTest (boolean isAdmin) {
+        if(isAdmin) {
+            String birthdate = LocalDate.of(DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR, DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH, DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY)
+                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            return new Person(
+                    DATA_FOR_TEST_ADMIN_FIRSTNAME,
+                    DATA_FOR_TEST_ADMIN_LASTNAME,
+                    DATA_FOR_TEST_ADMIN_FIRSTNAME.charAt(0) + "." + DATA_FOR_TEST_ADMIN_LASTNAME + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    RandomStringUtils.random(10, true, true),
+                    birthdate,
+                    isAdmin
+            );
+        } else {
+            String birthdate = LocalDate.of(DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR, DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH, DATA_FOR_TEST_BIRTHDAY_RANDOMDAY)
+                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            return new Person(
+                    DATA_FOR_TEST_FIRSTNAME,
+                    DATA_FOR_TEST_LASTNAME,
+                    DATA_FOR_TEST_FIRSTNAME.charAt(0) + "." + DATA_FOR_TEST_LASTNAME + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    RandomStringUtils.random(10, true, true),
+                    birthdate,
+                    isAdmin
+            );
+        }
     }
 
     public static List<Person> convertObjectToPerson(List<Object> objects){
@@ -268,7 +324,7 @@ public class PersonService implements WebMvcConfigurer {
     }
     public static List<Person> getDataWithoutSensibleInfos(boolean isAdmin, List<Person> personList){
         if(isAdmin) {
-            if (careAboutPersonalData) {
+            if (CARE_ABOUT_PERSONAL_DATA) {
                 List<Person> personList1 = new ArrayList<>();
                 for (Person person : personList) {
                     person.setPassword("***");
