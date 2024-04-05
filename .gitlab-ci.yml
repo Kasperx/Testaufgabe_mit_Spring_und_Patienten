@@ -21,6 +21,7 @@ stages:
   - build
   - install
   - test
+  - pack
   - deploy
   - start
 
@@ -39,7 +40,7 @@ install:
     - "mvn install -Dmaven.test.skip $MAVEN_CLI_OPTS"
 
 package:
-  stage: install
+  stage: pack
   only:
     refs:
       - master
@@ -118,8 +119,9 @@ package:
 create-image-and-upload-to-gitlab.com:
   stage: deploy
   dependencies:
-    - package
+    #- package
     #- test-with-junit
+    - integration-test
   only:
     refs:
       - master
