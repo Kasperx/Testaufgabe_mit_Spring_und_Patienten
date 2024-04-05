@@ -37,20 +37,29 @@
                 </button>
             </ul>
             <ul>
-                <button
-                    type="submit"
-                    class="btn btn-info"
-                    th:onclick="|window.location.href='?username=admin&pw=secret'|">
-                    Zeige alle Daten
-                </button>
+                <form action="" method="get">
+                    <button
+                            type="submit"
+                            class="btn btn-info">
+                        Zeige Daten
+                    </button>
+                </form>
+            </ul>
+            <ul>
+                <form action="?username=admin&pw=secret" method="get">
+                    <button
+                            type="submit"
+                            class="btn btn-info">
+                        Zeige alle Daten
+                    </button>
+                </form>
             </ul>
             <ul>
                 <form action="/createMoreData?username=admin&pw=secret" method="post">
                     <button
                             type="submit"
-                            value="Submit"
                             class="btn btn-info">
-                        Submit
+                        Neue Daten
                     </button>
                 </form>
             </ul>
@@ -82,8 +91,7 @@
             </div>
         </form>
     </div>
-    <div>show all data : [[${showAllData}]]</div>
-    <div th:if="${persons.size() > 0}">
+    <div th:if="${persons != null} and ${persons.size() > 0}">
         <marquee th:text="${persons[0].email} == null or ${persons[0].email} == '' ? 'User view' : 'Admin-view'" direction="right"></marquee>
         <div th:if="${persons[0].email} != null and ${persons[0].email} != ''">
         <!--<div th:if="${showAllData == 'true'}">-->

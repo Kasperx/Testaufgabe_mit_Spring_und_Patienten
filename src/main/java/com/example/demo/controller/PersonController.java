@@ -155,30 +155,27 @@ public class PersonController {
         //return "forward:/resources/templates/index.html";
         switch (isAdminAccount(username, pw)) {
             case YES -> {
+                log.info(IsAdmin.YES.toString());
+                /*
                 if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
-                    //createNewData(true);
+                    createNewData(true);
                     model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
                             "Created new data with admin account(s).");
                 }
-                //List<Person> personList = filterPersonData(true, personRepository.findAll());
-                //model.addAttribute("persons", personList);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findAll()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, true);
+                 */
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findByIsAdminTrue()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
-                //List<Person> personList = filterPersonData(personRepository.findAll());
-                //model.addAttribute("persons", personList);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findByIsAdminFalse()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, true);
+                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.EMPTY_PARAMETER.toString());
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findByIsAdminFalse()));
             }
             case WRONG_PARAMETER -> {
-                //log.error(IsAdmin.WRONG_PARAMETER.toString());
-                //List<Person> personList = filterPersonData(personRepository.findAll());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findByIsAdminFalse()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, true);
+                log.error(IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findByIsAdminFalse()));
             }
         }
         //model.addAttribute("Person", viewPerson);
