@@ -26,24 +26,24 @@ public class PersonService implements WebMvcConfigurer {
 
     public static final String MESSAGE_ERROR_WRONG_PARAMETERS = "ERROR: Wrong parameters for admin account.";
     public static final String MESSAGE_ERROR_EMPTY_PARAMETERS = "ERROR: Empty parameters for admin account.";
-    public static final String TEXT_EMAIL_ADDRESS_FOR_PERSON = "@gmail.com";
+    private static final String TEXT_EMAIL_ADDRESS_FOR_PERSON = "@gmail.com";
     private static final Logger log = LoggerFactory.getLogger(PersonService.class);
-    public static final String DATABASE_NAME = "PERSON";
-    public static final String NAME_FOR_MODEL_DATA = "persons";
-    public static final String NAME_FOR_MODEL_MESSAGE = "message";
-    public static final String NAME_FOR_MODEL_PERMISSION = "showAllData";
-    public static final boolean CARE_ABOUT_PERSONAL_DATA = true;
-    public static final boolean CREATE_DB_DATA_ON_STARTUP = true;
-    private final static String DATA_FOR_TEST_FIRSTNAME = "Julius";
-    private final static String DATA_FOR_TEST_LASTNAME = "Medikus";
-    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMDAY = 6;
-    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH = 6;
-    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR = 2000;
-    private final static String DATA_FOR_TEST_ADMIN_FIRSTNAME = "Amanda";
-    private final static String DATA_FOR_TEST_ADMIN_LASTNAME = "Kambus";
-    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY = 20;
-    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
-    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
+    public final String DATABASE_NAME = "PERSON";
+    public final String NAME_FOR_MODEL_DATA = "persons";
+    public final String NAME_FOR_MODEL_MESSAGE = "message";
+    public final String NAME_FOR_MODEL_PERMISSION = "showAllData";
+    private static final boolean CARE_ABOUT_PERSONAL_DATA = true;
+    public final boolean CREATE_DB_DATA_ON_STARTUP = true;
+    private static String DATA_FOR_TEST_FIRSTNAME = "Julius";
+    private static String DATA_FOR_TEST_LASTNAME = "Medikus";
+    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMDAY = 6;
+    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH = 6;
+    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR = 2000;
+    private static String DATA_FOR_TEST_ADMIN_FIRSTNAME = "Amanda";
+    private static String DATA_FOR_TEST_ADMIN_LASTNAME = "Kambus";
+    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY = 20;
+    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
+    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
 
     public static enum IsAdmin {
         YES(""),
@@ -242,7 +242,7 @@ public class PersonService implements WebMvcConfigurer {
         return new Person(
                 firstname,
                 lastname,
-                firstname.charAt(0) + "." + lastname + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                firstname.charAt(0) + "." + lastname + TEXT_EMAIL_ADDRESS_FOR_PERSON,
                 RandomStringUtils.random(10, true, true),
                 birthdate,
                 isAdmin

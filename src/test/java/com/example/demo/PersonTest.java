@@ -39,10 +39,17 @@ public class PersonTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private PersonService personService;
+
     @MockBean
     private PersonController personController;
+
     static final String url = "http://localhost:8000";
+
     static final String urlCreateData = "http://localhost:8000/createMoreData?username=admin&pw=secret";
+
     private static final Logger log = LoggerFactory.getLogger(PersonTest.class);
 
     @DisplayName("Start -> Request")
@@ -70,7 +77,7 @@ public class PersonTest {
                 )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$."+PersonService.NAME_FOR_MODEL_DATA).exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$."+personService.NAME_FOR_MODEL_DATA).exists())
                 ;
     }
 
