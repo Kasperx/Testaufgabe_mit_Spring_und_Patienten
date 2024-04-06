@@ -66,8 +66,8 @@ package:
       - deploy-remote-ssh
       - db-data-call
   dependencies:
-    #- install
-    - package
+    - install
+    #- package
   script:
     - "mvn verify $MAVEN_CLI_OPTS"
   artifacts:
@@ -119,9 +119,9 @@ package:
 create-image-and-upload-to-gitlab.com:
   stage: deploy
   dependencies:
-    #- package
+    - package
     #- test-with-junit
-    - integration-test
+    #- integration-test
   only:
     refs:
       - master
