@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,7 @@ import static com.example.demo.service.PersonService.*;
 
 //@RestController
 @Controller
+//@RestController
 //@RequestMapping("/index.html")
 //@RequestMapping("/")
 @RequestMapping("")
@@ -153,16 +155,14 @@ public class PersonController {
     public String loadData(@RequestParam(required = false) String username, @RequestParam(required = false) String pw, Model model){
     //public String loadData(Model model){
         //return "forward:/resources/templates/index.html";
+        if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
+            createNewData(true);
+            model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
+                    "Created new data with admin account(s).");
+        }
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 log.info(IsAdmin.YES.toString());
-                /*
-                if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
-                    createNewData(true);
-                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                            "Created new data with admin account(s).");
-                }
-                 */
                 model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findByIsAdminTrue()));
             }
             case EMPTY_PARAMETER -> {

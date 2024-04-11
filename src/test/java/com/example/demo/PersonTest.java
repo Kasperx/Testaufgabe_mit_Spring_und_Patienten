@@ -19,10 +19,12 @@ import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,12 +54,12 @@ public class PersonTest {
 
     private static final Logger log = LoggerFactory.getLogger(PersonTest.class);
 
+    /*
     @DisplayName("Start -> Request")
     @BeforeTestClass
     public void start(){
         log.info("Start -> Request");
     }
-    /*
     @Test
     @DisplayName("Start -> Request")
     void EnsureWebsiteReturnsStatusOk() throws IOException, InterruptedException {
@@ -70,15 +72,68 @@ public class PersonTest {
      */
 
     @Test
-    public void test() throws Exception {
+    @ResponseBody
+    @DisplayName("1st lvl: basic request, get status http.ok")
+    public void testRequest() throws Exception {
+        log.info("1st lvl: basic request, get status http.ok");
         mockMvc.perform(MockMvcRequestBuilders
                 .get(url)
-                .accept(MediaType.APPLICATION_JSON)
-                )
+                .accept(MediaType.APPLICATION_JSON))
+                //.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                ;
+        createWebsiteData();
+    }
+    /*
+    @Test
+    @DisplayName("1st lvl: basic request, get status http.ok, get json response with data path.")
+    public void testRequestWithJson() throws Exception {
+        log.info("1st lvl: basic request, get status http.ok, get json response with data path.");
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$."+personService.NAME_FOR_MODEL_DATA).exists())
                 ;
+    }
+     */
+
+    private void createWebsiteData() throws Exception {
+        log.info("Create data with db:");
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(urlCreateData)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @ResponseBody
+    @DisplayName("Next lvl: basic request, get status http.ok, get json response with data path.")
+    public void testRequestWithJson() throws Exception {
+        log.info("Next lvl: basic request, get status http.ok, get json response with data path.");
+        log.info("Result:");
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$."+personService.NAME_FOR_MODEL_DATA).exists())
+                .andReturn();
+        //mvcResult
+                //.andReturn().getResponse().getContentAsString()
+//                .andExpect(MockMvcResultMatchers.jsonPath("$."+personService.NAME_FOR_MODEL_DATA).exists());
+        /*
+        mockMvc.perform(MockMvcRequestBuilders
+                //.get(url)
+                .post(urlCreateData)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                //.andReturn().getResponse().getContentAsString()
+                .andExpect(MockMvcResultMatchers.jsonPath("$."+personService.NAME_FOR_MODEL_DATA).exists())
+        ;
+         */
     }
 
     @AfterTestClass
