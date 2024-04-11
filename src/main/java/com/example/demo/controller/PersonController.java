@@ -156,14 +156,11 @@ public class PersonController {
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 log.info(IsAdmin.YES.toString());
-                /*
                 if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
                     createNewData(true);
-                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                            "Created new data with admin account(s).");
+                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, "Created new data with admin account(s).");
                 }
-                 */
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findByIsAdminTrue()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findAll()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
