@@ -4,8 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import static com.example.demo.service.PersonService.getPasswordString;
 import static com.example.demo.service.PersonService.getTabsForConsoleOut;
 
 @Entity
@@ -22,26 +23,26 @@ public class Person {
     @Column(name = "ID", unique = true)
     int id;
 
-    public Person(String firstName, String lastName, String email, String password, int age, boolean isAdmin) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Person(String firstName, String lastName, String email, String password, String birthdata, boolean isAdmin) {
+        this.firstname = firstName;
+        this.lastname = lastName;
         this.email = email;
         this.password = password;
-        this.age = age;
+        this.birthdate = birthdata;
         this.isAdmin = isAdmin;
     }
 
-    public Person(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
+    public Person(String firstName, String lastName, String birthdata) {
+        this.firstname = firstName;
+        this.lastname = lastName;
+        this.birthdate = birthdata;
     }
 
     @Column(name = "FIRSTNAME")
-    String firstName;
+    String firstname;
 
     @Column(name = "LASTNAME")
-    String lastName;
+    String lastname;
 
     @Column(name = "EMAIL")
     String email;
@@ -49,8 +50,9 @@ public class Person {
     @Column(name = "PASSWORD")
     String password;
 
-    @Column(name = "AGE")
-    int age;
+    @DateTimeFormat(pattern = "dd.MM.yyyy")
+    @Column(name = "BIRTHDATE")
+    String birthdate;
 
     @Column(name = "ISADMIN")
     boolean isAdmin;
@@ -69,65 +71,36 @@ public class Person {
                 '}';
     }
      */
-    /*
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", firstName("+firstName.length()+")='" + firstName + '\'' +
-                (firstName.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (firstName.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "lastName("+lastName.length()+")='" + lastName + '\'' +
-                (lastName.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (lastName.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "email("+email.length()+")='" + email + '\'' +
-                (email.length() < countCharsFor1Tab
-                        ? ", \t-\t-\t"
-                        : (email.length() < countCharsFor2Tabs
-                                ? ", \t-\t"
-                                : "\t" )
-                ) +
-                "password("+password.length()+")='" + password + '\'' +
-                ", \tage=" + age +
-                ", \tisAdmin=" + isAdmin +
-                '}';
-    }
-     */
     final boolean showLengthOfText = false;
     public String toString() {
         if(showLengthOfText){
             return "Person{" +
                     "id=" + id +
-                    ", firstName(" + firstName.length() + ")='" + firstName + '\'' +
-                    ", " + getTabsForConsoleOut(firstName) +
-                    "lastName(" + lastName.length() + ")='" + lastName + '\'' +
-                    ", " + getTabsForConsoleOut(lastName) +
+                    ", firstName(" + firstname.length() + ")='" + firstname + '\'' +
+                    ", " + getTabsForConsoleOut(firstname) +
+                    "lastName(" + lastname.length() + ")='" + lastname + '\'' +
+                    ", " + getTabsForConsoleOut(lastname) +
                     "email(" + email.length() + ")='" + email + '\'' +
                     ", " + getTabsForConsoleOut(email) +
-                    "password(" + password.length() + ")='" + password + '\'' +
-                    ", " + getTabsForConsoleOut(password) +
-                    "age=" + age +
+                    "password(" + getPasswordString(password).length() + ")='" + getPasswordString(password) + '\'' +
+                    ", " + getTabsForConsoleOut(
+                            getPasswordString(password)) +
+                    "birthdata=" + birthdate +
                     ", isAdmin=" + isAdmin +
                     '}';
         } else {
             return "Person{" +
                     "id=" + id +
-                    ", firstName='" + firstName + '\'' +
-                    ", " + getTabsForConsoleOut(firstName) +
-                    "lastName='" + lastName + '\'' +
-                    ", " + getTabsForConsoleOut(lastName) +
+                    ", firstName='" + firstname + '\'' +
+                    ", " + getTabsForConsoleOut(firstname) +
+                    "lastName='" + lastname + '\'' +
+                    ", " + getTabsForConsoleOut(lastname) +
                     "email='" + email + '\'' +
                     ", " + getTabsForConsoleOut(email) +
-                    "password='" + password + '\'' +
-                    ", " + getTabsForConsoleOut(password) +
-                    "age=" + age +
+                    "password='" + getPasswordString(password) + '\'' +
+                    ", " + getTabsForConsoleOut(
+                        getPasswordString(password)) +
+                    "birthdata=" + birthdate +
                     ", isAdmin=" + isAdmin +
                     '}';
         }
