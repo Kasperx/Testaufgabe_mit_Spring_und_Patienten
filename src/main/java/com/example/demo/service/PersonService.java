@@ -213,7 +213,6 @@ public class PersonService implements WebMvcConfigurer {
         log.info("Creating "+personList.size()+" data for persons.");
         return personList;
     }
-    private static int COUNT_PERSON_DATA = 10;
     public static List<Person> createNewData() {
         return createNewData(COUNT_PERSON_DATA);
     }

@@ -28,41 +28,35 @@
     <h2 class="text-center">Spielwiese</h2>
     <h3 class="text-center">Steuerung</h3>
     <h4>
-        <div class="text-center">
-            <ul>
+        <div class="container">
+            <div class="text-center row">
                 <button
-                    class="btn btn-info"
+                    class="btn btn-info col-sm-3"
                     th:onclick="|window.location.href=''|">
                     Zeige Daten
                 </button>
-            </ul>
-            <ul>
-                <form action="" method="get">
+                <form action="" method="get" class="col-sm-3">
                     <button
                             type="submit"
                             class="btn btn-info">
                         Zeige Daten
                     </button>
                 </form>
-            </ul>
-            <ul>
-                <form action="?username=admin&pw=secret" method="get">
+                <form action="?username=admin&pw=secret" method="get" class="col-sm-3">
                     <button
                             type="submit"
                             class="btn btn-info">
                         Zeige alle Daten
                     </button>
                 </form>
-            </ul>
-            <ul>
-                <form action="/createMoreData?username=admin&pw=secret" method="post">
+                <form action="/createMoreData?username=admin&pw=secret" method="post" class="col-sm-3">
                     <button
                             type="submit"
                             class="btn btn-info">
                         Neue Daten
                     </button>
                 </form>
-            </ul>
+            </div>
         </div>
     </h4>
 
