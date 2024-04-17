@@ -45,8 +45,7 @@ package:
     refs:
       - master
       - main
-      - deploy-remote-ssh
-      - db-data-call
+      - junit-test-and-post-request
   dependencies:
     #- test-with-junit
     - install
@@ -63,8 +62,7 @@ package:
     refs:
       - master
       - main
-      - deploy-remote-ssh
-      - db-data-call
+      - junit-test-and-post-request
   dependencies:
     - install
     #- package
@@ -93,7 +91,7 @@ package:
     refs:
       - master
       - main
-      - deploy-remote-ssh
+      - junit-test-and-post-request
   #image: debian:oldstable
   image: "$DEBIAN"
   when: manual
@@ -126,8 +124,7 @@ create-image-and-upload-to-gitlab.com:
     refs:
       - master
       - main
-      - deploy-remote-ssh
-      - db-data-call
+      - junit-test-and-post-request
   image: "$DOCKER"
   #image: "$DEBIAN"
   #services:
@@ -170,8 +167,7 @@ create-image-and-upload-to-gitlab.com:
     refs:
       - master
       - main
-      - deploy-remote-ssh
-      - db-data-call
+      - junit-test-and-post-request
   #image: debian:oldstable
   #image: docker:20-git
   image: "$DOCKER"
@@ -210,8 +206,7 @@ upload-to-cloud-and-start:
     refs:
       - master
       - main
-      - deploy-remote-ssh
-      - db-data-call
+      - junit-test-and-post-request
   variables:
     DOCKER_HOST: ssh://web@"$URL"
   services:
