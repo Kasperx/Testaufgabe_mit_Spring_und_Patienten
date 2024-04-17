@@ -10,25 +10,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.service.PersonService.*;
 
-//@RestController
-@Controller
-//@RestController
+@RestController
+//@Controller
 //@RequestMapping("/index.html")
 //@RequestMapping("/")
 @RequestMapping("")
+@EnableWebMvc
 public class PersonController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
@@ -55,12 +56,14 @@ public class PersonController {
 
     @PostMapping("/createMoreData")
     @ResponseStatus(code = HttpStatus.OK)
-    public String createMoreData(
+    public ModelAndView createMoreData(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String pw,
             Model model,
-            HttpServletResponse httpServletResponse){
-        //viewPerson = (ViewPerson) model.getAttribute("Person");
+            HttpServletResponse httpServletResponse
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(htmlFile);
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 if(isDatabaseEmpty()) {
@@ -92,8 +95,7 @@ public class PersonController {
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
             }
         }
-        //model.addAttribute("Person", viewPerson);
-        return htmlFile;
+        return modelAndView;
     }
     @PostMapping("/findData")
     @ResponseStatus(code = HttpStatus.OK)
@@ -152,18 +154,21 @@ public class PersonController {
     }
 
     @GetMapping("")
-    public String loadData(@RequestParam(required = false) String username, @RequestParam(required = false) String pw, Model model){
-    //public String loadData(Model model){
-        //return "forward:/resources/templates/index.html";
-        if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
-            createNewData(true);
-            model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                    "Created new data with admin account(s).");
-        }
+    public ModelAndView loadData(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String pw,
+            Model model
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(htmlFile);
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 log.info(IsAdmin.YES.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findByIsAdminTrue()));
+                if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
+                    createNewData(true);
+                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, "Created new data with admin account(s).");
+                }
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findAll()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
@@ -179,7 +184,7 @@ public class PersonController {
             }
         }
         //model.addAttribute("Person", viewPerson);
-        return htmlFile;
+        return modelAndView;
     }
     private void createNewDataIfNotCreated(){
         if(isDatabaseEmpty()){
