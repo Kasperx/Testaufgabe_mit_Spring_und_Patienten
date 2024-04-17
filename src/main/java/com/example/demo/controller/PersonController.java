@@ -16,17 +16,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.service.PersonService.*;
 
-//@RestController
-@Controller
+@RestController
+//@Controller
 //@RequestMapping("/index.html")
 //@RequestMapping("/")
 @RequestMapping("")
+@EnableWebMvc
 public class PersonController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
@@ -53,12 +56,14 @@ public class PersonController {
 
     @PostMapping("/createMoreData")
     @ResponseStatus(code = HttpStatus.OK)
-    public String createMoreData(
+    public ModelAndView createMoreData(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String pw,
             Model model,
-            HttpServletResponse httpServletResponse){
-        //viewPerson = (ViewPerson) model.getAttribute("Person");
+            HttpServletResponse httpServletResponse
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(htmlFile);
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 if(isDatabaseEmpty()) {
@@ -90,8 +95,7 @@ public class PersonController {
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
             }
         }
-        //model.addAttribute("Person", viewPerson);
-        return htmlFile;
+        return modelAndView;
     }
     @PostMapping("/findData")
     @ResponseStatus(code = HttpStatus.OK)
@@ -150,9 +154,13 @@ public class PersonController {
     }
 
     @GetMapping("")
-    public String loadData(@RequestParam(required = false) String username, @RequestParam(required = false) String pw, Model model){
-    //public String loadData(Model model){
-        //return "forward:/resources/templates/index.html";
+    public ModelAndView loadData(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String pw,
+            Model model
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(htmlFile);
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 log.info(IsAdmin.YES.toString());
@@ -176,7 +184,7 @@ public class PersonController {
             }
         }
         //model.addAttribute("Person", viewPerson);
-        return htmlFile;
+        return modelAndView;
     }
     private void createNewDataIfNotCreated(){
         if(isDatabaseEmpty()){

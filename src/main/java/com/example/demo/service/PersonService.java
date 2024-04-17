@@ -3,14 +3,20 @@ package com.example.demo.service;
 import com.example.demo.entity.Person;
 import com.github.javafaker.Faker;
 import jakarta.persistence.Column;
+import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,6 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 //@Configuration
 //@EnableWebMvc
 @Service
+@Component
 public class PersonService implements WebMvcConfigurer {
 
     public static final String MESSAGE_ERROR_WRONG_PARAMETERS = "ERROR: Wrong parameters for admin account.";
@@ -34,17 +41,32 @@ public class PersonService implements WebMvcConfigurer {
     public final String NAME_FOR_MODEL_PERMISSION = "showAllData";
     private static final boolean CARE_ABOUT_PERSONAL_DATA = true;
     public final boolean CREATE_DB_DATA_ON_STARTUP = true;
-    private static String DATA_FOR_TEST_FIRSTNAME = "Julius";
-    private static String DATA_FOR_TEST_LASTNAME = "Medikus";
-    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMDAY = 6;
-    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH = 6;
-    private static int DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR = 2000;
-    private static String DATA_FOR_TEST_ADMIN_FIRSTNAME = "Amanda";
-    private static String DATA_FOR_TEST_ADMIN_LASTNAME = "Kambus";
-    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY = 20;
-    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
-    private static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
+    private static int COUNT_PERSON_DATA = 10;
+    private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
+    @Setter
+    private static boolean CREATE_DATA_FOR_TEST = false;
+    /*
+    private final static String DATA_FOR_TEST_FIRSTNAME = "Julius";
+    private final static String DATA_FOR_TEST_LASTNAME = "Medikus";
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMDAY = 6;
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH = 6;
+    private final static int DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR = 2000;
+    /*
+    private final static String DATA_FOR_TEST_ADMIN_FIRSTNAME = "Amanda";
+    private final static String DATA_FOR_TEST_ADMIN_LASTNAME = "Kambus";
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY = 20;
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
+    private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
+     */
 
+    /*
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+     */
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
     public static enum IsAdmin {
         YES(""),
         EMPTY_PARAMETER(MESSAGE_ERROR_EMPTY_PARAMETERS),
@@ -173,7 +195,6 @@ public class PersonService implements WebMvcConfigurer {
             }
         }
     }
-    private final static boolean CREATE_DATA_FOR_TEST = true;
     //private static final String pathToWebFiles = "/resources/webapp";
     public static List<Person> createNewDataWithAdmin() {
         List<Person> personList = new ArrayList<>();
@@ -192,11 +213,11 @@ public class PersonService implements WebMvcConfigurer {
         log.info("Creating "+personList.size()+" data for persons.");
         return personList;
     }
-    private static int COUNT_PERSON_DATA = 10;
+
     public static List<Person> createNewData() {
         return createNewData(COUNT_PERSON_DATA);
     }
-    private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
+
     public static List<Person> createNewData(int countPersonData) {
         List<Person> personList = new ArrayList<>();
         Person person = null;
@@ -250,23 +271,27 @@ public class PersonService implements WebMvcConfigurer {
     }
     static Person getNewPersonForTest (boolean isAdmin) {
         if(isAdmin) {
-            String birthdate = LocalDate.of(DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR, DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH, DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMDAY)
+            String birthdate = LocalDate.of(Data4Test.Admin.Date.randomyear.value,
+                            Data4Test.Admin.Date.randommonth.value,
+                            Data4Test.Admin.Date.radnomday.value)
                     .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             return new Person(
-                    DATA_FOR_TEST_ADMIN_FIRSTNAME,
-                    DATA_FOR_TEST_ADMIN_LASTNAME,
-                    DATA_FOR_TEST_ADMIN_FIRSTNAME.charAt(0) + "." + DATA_FOR_TEST_ADMIN_LASTNAME + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    Data4Test.Admin.Name.firstname.toString(),
+                    Data4Test.Admin.Name.lastname.toString(),
+                    Data4Test.Admin.Name.firstname.toString().charAt(0) + "." + Data4Test.Admin.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                     RandomStringUtils.random(10, true, true),
                     birthdate,
                     isAdmin
             );
         } else {
-            String birthdate = LocalDate.of(DATA_FOR_TEST_BIRTHDAY_RANDOMYEAR, DATA_FOR_TEST_BIRTHDAY_RANDOMMONTH, DATA_FOR_TEST_BIRTHDAY_RANDOMDAY)
+            String birthdate = LocalDate.of(Data4Test.Normal.Date.randomyear.value,
+                            Data4Test.Normal.Date.randommonth.value,
+                            Data4Test.Normal.Date.radnomday.value)
                     .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             return new Person(
-                    DATA_FOR_TEST_FIRSTNAME,
-                    DATA_FOR_TEST_LASTNAME,
-                    DATA_FOR_TEST_FIRSTNAME.charAt(0) + "." + DATA_FOR_TEST_LASTNAME + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    Data4Test.Normal.Name.firstname.toString(),
+                    Data4Test.Normal.Name.lastname.toString(),
+                    Data4Test.Normal.Name.firstname.toString().charAt(0) + "." + Data4Test.Normal.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                     RandomStringUtils.random(10, true, true),
                     birthdate,
                     isAdmin
