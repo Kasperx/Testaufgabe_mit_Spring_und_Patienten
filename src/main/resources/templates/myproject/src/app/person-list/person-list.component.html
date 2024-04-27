@@ -1,0 +1,57 @@
+<h1>People Overview</h1>
+
+<ul>
+    <li *ngFor="let person of people; let i = index"></li>
+</ul>
+
+<p></p>
+
+<div *ngIf="people != null">
+    <li *ngFor="let person of people; let i = index">
+        {{i}}.Person: {{person.id}}
+    </li>
+</div>
+
+<p></p>
+
+<div *ngIf="people != null">
+    <table>
+        <thead>
+            <tr>
+                <th *ngFor="let field of people[0] | keyvalue">
+                    {{field.key}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let person of people">
+                <td *ngFor="let field of person | keyvalue">
+                    {{field.value}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p></p>
+
+<div *ngIf="people != null">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>FIRSTNAME</th>
+                <th>LASTNAME</th>
+                <th>BIRTHDAY</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let person of people">
+                <td>{{person.id}}</td>
+                <td>{{person.firstname}}</td>
+                <td>{{person.lastname}}</td>
+                <td>{{person.birthdate}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
