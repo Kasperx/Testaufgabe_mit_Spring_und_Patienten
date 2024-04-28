@@ -34,9 +34,9 @@ export class PersonListComponent implements OnInit{
   // title = 'myproject';
 
   ngOnInit(): void {
-    this.httpService.getPosts().subscribe(
-      (response) => {this.posts = response;},
-      (error) => {console.log(error)}
-    );
+    // this.httpService.getPosts().subscribe(
+    //   (response) => {this.posts = response;},
+    //   (error) => {console.log(error)}
+    // );
   }
 }
