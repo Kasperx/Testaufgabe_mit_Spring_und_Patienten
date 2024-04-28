@@ -1,21 +1,9 @@
+<p></p>
+
 <h1>People Overview</h1>
 
-<ul>
-    <li *ngFor="let person of people; let i = index"></li>
-</ul>
-
-<p></p>
-
-<div *ngIf="people != null">
-    <li *ngFor="let person of people; let i = index">
-        {{i}}.Person: {{person.id}}
-    </li>
-</div>
-
-<p></p>
-
-<div *ngIf="people != null">
-    <table>
+<!-- <div *ngIf="people != null">
+    <table class="table table-dark table-striped table-hover">
         <thead>
             <tr>
                 <th *ngFor="let field of people[0] | keyvalue">
@@ -31,18 +19,22 @@
             </tr>
         </tbody>
     </table>
-</div>
+</div> -->
+
+<p></p>
+
+<marquee>User view</marquee>
 
 <p></p>
 
 <div *ngIf="people != null">
-    <table>
+    <table class="table table-striped table-hover text-center">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>FIRSTNAME</th>
                 <th>LASTNAME</th>
-                <th>BIRTHDAY</th>
+                <th>BIRTHDATE</th>
             </tr>
         </thead>
         <tbody>
