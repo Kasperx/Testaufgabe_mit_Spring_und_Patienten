@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
+    <title>Spring Boot Thymeleaf with some data</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+
+<body>
+<!--<div class="container-fluid" style="max-width: 900px; margin: 0 auto;">-->
+<div class="container">
+    <h2 class="text-center">Spielwiese</h2>
+    <h3 class="text-center">Steuerung</h3>
+    <h4>
+        <div class="container">
+            <div class="text-center row">
+                <button
+                    class="btn btn-info col-sm-3"
+                    th:onclick="|window.location.href=''|">
+                    Zeige Daten
+                </button>
+                <form action="" method="get" class="col-sm-3">
+                    <button
+                            type="submit"
+                            class="btn btn-info">
+                        Zeige Daten
+                    </button>
+                </form>
+                <form action="?username=admin&pw=secret" method="get" class="col-sm-3">
+                    <button
+                            type="submit"
+                            class="btn btn-info">
+                        Zeige alle Daten
+                    </button>
+                </form>
+                <form action="/createMoreData?username=admin&pw=secret" method="post" class="col-sm-3">
+                    <button
+                            type="submit"
+                            class="btn btn-info">
+                        Neue Daten
+                    </button>
+                </form>
+            </div>
+        </div>
+    </h4>
+
+    <div th:if="${message != null}"
+         class="alert alert-success alert-dismissible fade show text-center message"
+         role="alert">
+        [[${message}]]
+        <button type="button" class="close btn-sm" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="my-3">
+        <form th:action="@{/persons}">
+            <div class="row d-flex">
+                <div class="col-md-6 mt-2">
+                    <div class="search">
+                        <i class="fa fa-search"></i>
+                        <input id="keyword" type="search" name="keyword" th:value="${keyword}" required class="form-control"
+                               placeholder="Suche nach Vorname / Nachname / Emailadresse">
+                        <button type="submit" class="btn btn-secondary">Suche (noch nicht aktiv)</button>
+                        <button id="btnClear" class="btn btn-info">Clear</button>
+                    </div>
+                    <p></p>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div th:if="${persons != null} and ${persons.size() > 0}">
+        <marquee th:text="${persons[0].email} == null or ${persons[0].email} == '' ? 'User view' : 'Admin-view'" direction="right"></marquee>
+        <div th:if="${persons[0].email} != null and ${persons[0].email} != ''">
+        <!--<div th:if="${showAllData == 'true'}">-->
+            <table class="table table-hover table-responsive-xl table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th class="col-md-4" scope="col">Vorname</th>
+                    <th class="col-md-4" scope="col">Nachname</th>
+                    <th class="col-md-4" scope="col">EMailadresse</th>
+                    <th class="col-md-4" scope="col">Geburtsdatum (Alter)</th>
+                    <th class="col-md-4" scope="col">Passwort</th>
+                    <th class="col-md-4" scope="col">Ist Admin</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="person : ${persons}">
+                    <td class="col-md-4">[[${person.firstname}]]</td>
+                    <td class="col-md-4">[[${person.lastname}]]</td>
+                    <td class="col-md-4">[[${person.email}]]</td>
+                    <td class="col-md-4">[[${person.birthdate}]]</td>
+                    <td class="col-md-4">[[${person.password}]]</td>
+                    <td class="col-md-4">[[${person.isAdmin}]]</td>
+                    <td class="col-md-4">
+                        <a
+                                th:href="@{'/persons/' + ${person.id}}"
+                                title="Edit this person"
+                                class="fa-regular fa-pen-to-square icon-dark">
+                        </a>
+                        <a
+                                th:href="@{'/persons/delete/' + ${person.id}}"
+                                id="btnDelete"
+                                title="Delete this person"
+                                class="fa-regular fa-trash-can icon-dark btn-delete">
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:unless="${persons[0].email} != null and ${persons[0].email} != ''">
+        <!--<div th:unless="${showAllData == 'true'}">-->
+            <table class="table table-hover table-responsive-xl table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th class="col-md-4" scope="col">Vorname</th>
+                    <th class="col-md-4" scope="col">Nachname</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="person : ${persons}">
+                    <td class="col-md-4">[[${person.firstname}]]</td>
+                    <td class="col-md-4">[[${person.lastname}]]</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="" th:unless="${persons.size() > 0}">
+        <span>No persons found!</span>
+    </div>
+</div>
+
+<div class="modal fade text-center" id="confirmModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span id="confirmText"></span>
+            </div>
+
+            <div class="modal-footer">
+                <a type="button" id="yesBtn" class="btn btn-danger">Yes</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".btn-delete").on("click", function (e) {
+            e.preventDefault();
+            link = $(this);
+
+            personTitle = link.attr("personTitle");
+            $("#yesBtn").attr("href", link.attr("href"));
+            $("#confirmText").html("Do you want to delete the person \<strong\>" + personTitle + "\<\/strong\>?");
+            $("#confirmModal").modal();
+        });
+
+        $("#btnClear").on("click", function (e) {
+            e.preventDefault();
+            $("#keyword").text("");
+            window.location = "[[@{/persons}]]";
+        });
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.controller.PersonController;
-import com.example.demo.entity.Person;
+import com.example.demo.entity.Patient;
 import com.example.demo.service.PersonService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,7 +49,7 @@ public class PersonTest {
 
     private static final Logger log = LoggerFactory.getLogger(PersonTest.class);
 
-    private List<Person> personList;
+    private List<Patient> personList;
 
     @DisplayName("Start -> Request")
     @BeforeTestClass
@@ -60,7 +60,7 @@ public class PersonTest {
                         .accept(MediaType.APPLICATION_JSON));
         //personService.setCREATE_DATA_FOR_TEST(true);
         personList.addAll(PersonService.createNewData(10));
-        //person = new Person();
+        //person = new Patient();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class PersonTest {
 
     @Test
     public void testPersonListCountObjects(){
-         List<Person> personList = new ArrayList<>(PersonService.createNewData(10));
+         List<Patient> personList = new ArrayList<>(PersonService.createNewData(10));
          assertEquals("Created new list with 10 objects", 10, personList.size());
          personList.addAll(PersonService.createNewData(10));
          assertEquals("Expanded list with 10 more objects", 20, personList.size());
