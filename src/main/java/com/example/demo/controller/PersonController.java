@@ -1,19 +1,15 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Person;
+import com.example.demo.entity.Patient;
 import com.example.demo.repository.PersonRepository;
 import com.example.demo.service.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,7 +22,7 @@ import static com.example.demo.service.PersonService.*;
 
 @RestController
 //@Controller
-//@RequestMapping("/index.html")
+//@RequestMapping("/index.html.backup")
 //@RequestMapping("/")
 @RequestMapping("")
 @EnableWebMvc
@@ -50,7 +46,7 @@ public class PersonController {
 
     //@Autowired
     //ViewPerson viewPerson;
-    final String htmlFile = "index";
+    final String htmlFile = "index.html";
 
     //public PersonController(PersonRepository frontendController) { this.personRepository = frontendController; }
 
@@ -75,7 +71,7 @@ public class PersonController {
                     model.addAttribute("message",
                         "Created new data.");
                 }
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findAll()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, true);
             }
             case EMPTY_PARAMETER -> {
@@ -83,7 +79,7 @@ public class PersonController {
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
                         "Did not create new data: " + PersonService.IsAdmin.EMPTY_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findAll()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
             }
             case WRONG_PARAMETER -> {
@@ -91,12 +87,13 @@ public class PersonController {
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
                         "Did not create new data: " + PersonService.IsAdmin.WRONG_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findAll()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
             }
         }
         return modelAndView;
     }
+    /*
     @PostMapping("/findData")
     @ResponseStatus(code = HttpStatus.OK)
     public void findData(
@@ -104,9 +101,9 @@ public class PersonController {
             @RequestParam(required = false) String pw,
             Model model,
             HttpServletResponse httpServletResponse){
-        Person person = (Person) model.getAttribute(personService.NAME_FOR_MODEL_DATA);
+        Patient person = (Patient) model.getAttribute(personService.NAME_FOR_MODEL_DATA);
         if(person != null) {
-            List<Person> personList = null;
+            List<Patient> personList = null;
             if (!(personList = personRepository.findByEmail(person.getEmail())).isEmpty()) {
                 model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personList));
             } else if (!(personList = personRepository.findByEmailStartsWith(person.getEmail())).isEmpty()) {
@@ -118,6 +115,7 @@ public class PersonController {
             }
         }
     }
+     */
     @PostMapping("/removeData/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeData(
@@ -128,7 +126,7 @@ public class PersonController {
             HttpServletResponse httpServletResponse){
         switch (isAdminAccount(username, pw)) {
             case YES -> {
-                Optional<Person> optionalPerson = personRepository.findById(id);
+                Optional<Patient> optionalPerson = personRepository.findById(id);
                 if(optionalPerson.isPresent()) {
                     personRepository.delete(optionalPerson.get());
                 } else {
@@ -168,27 +166,54 @@ public class PersonController {
                     createNewData(true);
                     model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, "Created new data with admin account(s).");
                 }
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personRepository.findAll()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findByIsAdminFalse()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
             case WRONG_PARAMETER -> {
                 log.error(IsAdmin.WRONG_PARAMETER.toString());
                 model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
                 model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(false, personRepository.findByIsAdminFalse()));
+                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
         }
-        //model.addAttribute("Person", viewPerson);
+        //model.addAttribute("Patient", viewPerson);
         return modelAndView;
     }
+    /*
+    @GetMapping("")
+    public List<Patient> loadData(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String pw
+    ){
+        switch (isAdminAccount(username, pw)) {
+            case YES -> {
+                log.info(IsAdmin.YES.toString());
+                if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
+                    createNewData(true);
+                }
+                return getDataWithoutSensibleInfos(personRepository.findAll());
+            }
+            case EMPTY_PARAMETER -> {
+                log.error(IsAdmin.EMPTY_PARAMETER.toString());
+                return getDataWithoutSensibleInfos(personRepository.findAll());
+            }
+            case WRONG_PARAMETER -> {
+                log.error(IsAdmin.WRONG_PARAMETER.toString());
+                return getDataWithoutSensibleInfos(personRepository.findAll());
+            }
+        }
+        return null;
+    }
+    */
+
     private void createNewDataIfNotCreated(){
         if(isDatabaseEmpty()){
-            List<Person> personList = createNewDataWithAdmin();
+            List<Patient> personList = createNewDataWithAdmin();
             log.info("Saving all "+personList.size()+" data to database.");
             personRepository.saveAll(personList);
         }
@@ -197,7 +222,7 @@ public class PersonController {
         createNewData(false);
     }
     private void createNewData(boolean withAdmin){
-        List<Person> personList = null;
+        List<Patient> personList = null;
         if(withAdmin) {
             personList = createNewDataWithAdmin();
         } else {

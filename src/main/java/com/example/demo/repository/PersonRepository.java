@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Person;
+import com.example.demo.entity.Patient;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,38 +8,30 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-//public interface PersonRepository extends CrudRepository<Person, Integer> {
+//public interface PersonRepository extends CrudRepository<Patient, Integer> {
 @Repository
 @Transactional
-public interface PersonRepository extends JpaRepository<Person, Integer> {
+public interface PersonRepository extends JpaRepository<Patient, Integer> {
 
-    boolean existsPersonByEmail(String email);
     /*
     @Query(
-            value = "select * from Person",
+            value = "select * from Patient",
             nativeQuery = true
     )
-    List<Person> findAllWithPermission();
+    List<Patient> findAllWithPermission();
     */
-
+    /*
     @Query(
-            //value = "select firstname, lastname, age from Person where isAdmin is false",
-            value = "select firstname, lastname, age from Person where isAdmin is false",
+            //value = "select firstname, lastname, age from Patient where isAdmin is false",
+            value = "select firstname, lastname, age from PATIENT where isAdmin is false",
             nativeQuery = true
     )
     List<Object> findAllWithoutPermission();
-
+     */
+    /*
     @Query(
-            value = "select * from Person where isAdmin is true",
+            value = "select * from PATIENT where isAdmin is true",
             nativeQuery = true
     )
-    List<Person> findAdmin();
-
-    List<Person> findByIsAdminFalse();
-    List<Person> findByIsAdminTrue();
-    List<Person> findByEmail(String emailaddress);
-    List<Person> findByEmailStartsWith(String emailaddress);
-    List<Person> findByFirstname(String firstname);
-    List<Person> findByLastname(String lastname);
-    List<Person> findByBirthdate(String birthdate);
+     */
 }

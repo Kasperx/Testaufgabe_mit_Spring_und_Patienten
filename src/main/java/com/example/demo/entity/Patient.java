@@ -1,20 +1,20 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import static com.example.demo.service.PersonService.getPasswordString;
+//import static com.example.demo.service.PersonService.getPasswordString;
 import static com.example.demo.service.PersonService.getTabsForConsoleOut;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@Table(name = "PERSON")
-public class Person {
+//@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "PATIENT")
+public class Patient {
 
     final long serialId = 1L;
 
@@ -23,44 +23,38 @@ public class Person {
     @Column(name = "ID", unique = true)
     int id;
 
-    public Person(String firstName, String lastName, String email, String password, String birthdata, boolean isAdmin) {
-        this.firstname = firstName;
-        this.lastname = lastName;
-        this.email = email;
-        this.password = password;
-        this.birthdate = birthdata;
-        this.isAdmin = isAdmin;
-    }
+    @Column(name = "Vorname", length = 30)
+    String Vorname;
 
-    public Person(String firstName, String lastName, String birthdata) {
-        this.firstname = firstName;
-        this.lastname = lastName;
-        this.birthdate = birthdata;
-    }
+    @Column(name = "Nachname", length = 47)
+    String Nachname;
 
-    @Column(name = "FIRSTNAME")
-    String firstname;
+    @Column(name = "Geburtsdatum", length = 10)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    String Geburtsdatum;
 
-    @Column(name = "LASTNAME")
-    String lastname;
+    @Column(name = "Versichertennummer", length = 12)
+    String Versichertennummer;
 
-    @Column(name = "EMAIL")
-    String email;
+    //@Column(name = "Versichertenstatus")
+    //String Versichertenstatus;
 
-    @Column(name = "PASSWORD")
-    String password;
+    @Column(name = "Strasse", length = 30)
+    String Strasse;
 
-    @DateTimeFormat(pattern = "dd.MM.yyyy")
-    @Column(name = "BIRTHDATE")
-    String birthdate;
+    @Column(name = "PLZ", length = 10)
+    String PLZ;
 
-    @Column(name = "ISADMIN")
-    boolean isAdmin;
+    @Column(name = "Ort", length = 50)
+    String Ort;
+
+    //@Column(name = "Laenderkennzeichen")
+    //String Laenderkennzeichen;
 
     /*
     @Override
     public String toString() {
-        return "Person{" +
+        return "Patient{" +
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
@@ -71,10 +65,11 @@ public class Person {
                 '}';
     }
      */
+    /*
     final boolean showLengthOfText = false;
     public String toString() {
         if(showLengthOfText){
-            return "Person{" +
+            return "Patient{" +
                     "id=" + id +
                     ", firstName(" + firstname.length() + ")='" + firstname + '\'' +
                     ", " + getTabsForConsoleOut(firstname) +
@@ -89,7 +84,7 @@ public class Person {
                     ", isAdmin=" + isAdmin +
                     '}';
         } else {
-            return "Person{" +
+            return "Patient{" +
                     "id=" + id +
                     ", firstName='" + firstname + '\'' +
                     ", " + getTabsForConsoleOut(firstname) +
@@ -104,5 +99,15 @@ public class Person {
                     ", isAdmin=" + isAdmin +
                     '}';
         }
+    }
+     */
+    public Patient(String vorname, String nachname, String geburtsdatum, String versichertennummer, String strasse, String PLZ, String ort) {
+        Vorname = vorname;
+        Nachname = nachname;
+        Geburtsdatum = geburtsdatum;
+        Versichertennummer = versichertennummer;
+        Strasse = strasse;
+        this.PLZ = PLZ;
+        Ort = ort;
     }
 }

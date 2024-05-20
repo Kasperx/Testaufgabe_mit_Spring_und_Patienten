@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Person;
+import com.example.demo.entity.Patient;
 import com.github.javafaker.Faker;
 import jakarta.persistence.Column;
 import lombok.Setter;
@@ -9,14 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -94,48 +91,8 @@ public class PersonService implements WebMvcConfigurer {
     static boolean isParameterEmpty (String username, String pw) {
         return StringUtils.isBlank(username) || StringUtils.isBlank(pw);
     }
-
-    public static List<Person> convertObjectToList (List<Map<String, Object>> mapList){
-        List<Person> personListTemp = new ArrayList<>();
-        for(Map obj: mapList){
-            Person person = new Person();
-            for(Object temp: obj.entrySet()) {
-                if(temp.toString().split("=")[0].equalsIgnoreCase("FIRSTNAME")) {
-                    person.setFirstname(
-                            temp.toString().split("=")[1]);
-                } else if(temp.toString().split("=")[0].equalsIgnoreCase("LASTNAME")) {
-                    person.setLastname(
-                            temp.toString().split("=")[1]);
-                } else if(temp.toString().split("=")[0].equalsIgnoreCase("EMAIL")) {
-                    person.setEmail(
-                            temp.toString().split("=")[1]);
-                } else if(temp.toString().split("=")[0].equalsIgnoreCase("AGE")) {
-                    person.setBirthdate(
-                            temp.toString().split("=")[1]);
-                } else if(temp.toString().split("=")[0].equalsIgnoreCase("PASSWORD")) {
-                    if(CARE_ABOUT_PERSONAL_DATA){
-                        person.setPassword("***");
-                    } else {
-                        person.setPassword(
-                                temp.toString().split("=")[1]);
-
-                    }
-                }
-            }
-            personListTemp.add(person);
-            log.info(obj.toString());
-        }
-        return personListTemp;
-    }
-    /*public String getPasswordString(Person person){
-        return careAboutPersonalData
-                ? "***"
-                : StringUtils.isBlank(person.getPassword())
-                        ? ""
-                        : person.getPassword();
-    }
-     */
-    public static String getPasswordString(Person person){
+    /*
+    public static String getPasswordString(Patient person){
         return getPasswordString(person.getPassword());
     }
     public static String getPasswordString(String password){
@@ -145,33 +102,10 @@ public class PersonService implements WebMvcConfigurer {
                         ? ""
                         : password;
     }
-    public static List<Person> convertObjectToList (Iterable<Person> personIterable){
-        List<Person> personListTemp = new ArrayList<>();
-        for(Person temp: personIterable){
-            Person person = new Person();
-            person.setFirstname(
-                    temp.getFirstname());
-            person.setLastname(
-                    temp.getLastname());
-            person.setEmail(
-                    temp.getEmail());
-            person.setBirthdate(
-                    temp.getBirthdate());
-            if(CARE_ABOUT_PERSONAL_DATA){
-                    person.setPassword("***");
-            } else {
-                    person.setPassword(
-                            temp.getPassword());
-            }
-            log.info(person.toString());
-            personListTemp.add(person);
-        }
-        return personListTemp;
-    }
-
+     */
     List<String> getTableColumnNames () {
         List<String> columns = new ArrayList<String>();
-        for (Field field : Person.class.getDeclaredFields()) {
+        for (Field field : Patient.class.getDeclaredFields()) {
             Column col = field.getAnnotation(Column.class);
             if (col != null) {
                 columns.add(col.name());
@@ -196,8 +130,9 @@ public class PersonService implements WebMvcConfigurer {
         }
     }
     //private static final String pathToWebFiles = "/resources/webapp";
-    public static List<Person> createNewDataWithAdmin() {
-        List<Person> personList = new ArrayList<>();
+    public static List<Patient> createNewDataWithAdmin() {
+        List<Patient> personList = new ArrayList<>();
+        /*
         if(CREATE_DATA_FOR_TEST) {
             // Create person with specific data for test (test with random data is difficult)
             personList.add(getNewPersonForTest(false));
@@ -205,6 +140,7 @@ public class PersonService implements WebMvcConfigurer {
             personList.add(getNewPersonForTest(true));
             COUNT_PERSON_DATA = COUNT_PERSON_DATA - 2;
         }
+         */
         // Create admin person
         log.info("Creating data for admin.");
         personList.add(getNewPerson(true));
@@ -213,13 +149,13 @@ public class PersonService implements WebMvcConfigurer {
         log.info("Creating "+personList.size()+" data for persons.");
         return personList;
     }
-    public static List<Person> createNewData() {
+    public static List<Patient> createNewData() {
         return createNewData(COUNT_PERSON_DATA);
     }
 
-    public static List<Person> createNewData(int countPersonData) {
-        List<Person> personList = new ArrayList<>();
-        Person person = null;
+    public static List<Patient> createNewData(int countPersonData) {
+        List<Patient> personList = new ArrayList<>();
+        Patient person = null;
         if(HAVE_MORE_THAN_1_ADMIN && ! CREATE_DATA_FOR_TEST) {
             // Create another admin account with random data
             person = getNewPerson(true);
@@ -234,9 +170,10 @@ public class PersonService implements WebMvcConfigurer {
         }
         return personList;
     }
-    public static List<Person> createNewDataForTest() {
-        List<Person> personList = new ArrayList<>();
-        Person person = getNewPersonForTest(true);
+    /*
+    public static List<Patient> createNewDataForTest() {
+        List<Patient> personList = new ArrayList<>();
+        Patient person = getNewPersonForTest(true);
         log.info("Creating data for test person 1. ["+person.toString()+"]");
         personList.add(person);
         person = getNewPersonForTest(false);
@@ -244,37 +181,44 @@ public class PersonService implements WebMvcConfigurer {
         personList.add(person);
         return personList;
     }
+     */
 
-    static Person getNewPerson () {
+    static Patient getNewPerson () {
         return getNewPerson(false);
     }
     Instant now = Instant.now();
     private final static LocalDate date = LocalDate.now(ZoneId.of("Europe/Berlin"));
-    static Person getNewPerson (boolean isAdmin) {
+    static Patient getNewPerson (boolean isAdmin) {
         Faker faker = new Faker();
         String firstname = faker.name().firstName();
         String lastname = faker.name().lastName();
+        String street = faker.address().streetName();
+        String plz = String.valueOf(10000  + new Random().nextInt(90000));
+        String city = faker.address().cityName();
         int randomDay = ThreadLocalRandom.current().nextInt(1, 30 + 1);
         int randomMonth = ThreadLocalRandom.current().nextInt(1, 12 + 1);
         int randomYear = LocalDate.now().getYear() - ThreadLocalRandom.current().nextInt(1, 100 + 1);
         String birthdate = LocalDate.of(randomYear, randomMonth, randomDay)
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        return new Person(
+                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        String randomNumber = String.valueOf(100000000  + new Random().nextInt(900000000));
+        return new Patient(
                 firstname,
                 lastname,
-                firstname.charAt(0) + "." + lastname + TEXT_EMAIL_ADDRESS_FOR_PERSON,
-                RandomStringUtils.random(10, true, true),
                 birthdate,
-                isAdmin
+                randomNumber,
+                street,
+                plz,
+                city
         );
     }
-    static Person getNewPersonForTest (boolean isAdmin) {
+    /*
+    static Patient getNewPersonForTest (boolean isAdmin) {
         if(isAdmin) {
             String birthdate = LocalDate.of(Data4Test.Admin.Date.randomyear.value,
                             Data4Test.Admin.Date.randommonth.value,
                             Data4Test.Admin.Date.radnomday.value)
                     .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            return new Person(
+            return new Patient(
                     Data4Test.Admin.Name.firstname.toString(),
                     Data4Test.Admin.Name.lastname.toString(),
                     Data4Test.Admin.Name.firstname.toString().charAt(0) + "." + Data4Test.Admin.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
@@ -287,7 +231,7 @@ public class PersonService implements WebMvcConfigurer {
                             Data4Test.Normal.Date.randommonth.value,
                             Data4Test.Normal.Date.radnomday.value)
                     .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            return new Person(
+            return new Patient(
                     Data4Test.Normal.Name.firstname.toString(),
                     Data4Test.Normal.Name.lastname.toString(),
                     Data4Test.Normal.Name.firstname.toString().charAt(0) + "." + Data4Test.Normal.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
@@ -297,12 +241,13 @@ public class PersonService implements WebMvcConfigurer {
             );
         }
     }
+     */
 
-    public static List<Person> convertObjectToPerson(List<Object> objects){
+    public static List<Patient> convertObjectToPerson(List<Object> objects){
         if(objects == null){
             return null;
         } else {
-            List<Person> temp = new ArrayList<>();
+            List<Patient> temp = new ArrayList<>();
 
             for(Object obj: objects){
                 log.info(obj.toString());
@@ -311,14 +256,14 @@ public class PersonService implements WebMvcConfigurer {
         }
     }
 /*
-    public static List<Person> filterPersonData(List<Person> personList) {
+    public static List<Patient> filterPersonData(List<Patient> personList) {
         return filterPersonData(false, personList);
     }
-    public static List<Person> filterPersonData(boolean isAdmin, List<Person> personList){
-        List<Person> temp = new ArrayList<>();
+    public static List<Patient> filterPersonData(boolean isAdmin, List<Patient> personList){
+        List<Patient> temp = new ArrayList<>();
         if(isAdmin){
-            for (Person person : personList) {
-                temp.add(new Person(
+            for (Patient person : personList) {
+                temp.add(new Patient(
                         person.getFirstName(),
                         person.getLastName(),
                         person.getEmail(),
@@ -330,9 +275,9 @@ public class PersonService implements WebMvcConfigurer {
                 ));
             }
         } else {
-            for (Person person : personList) {
+            for (Patient person : personList) {
                 if (!person.isAdmin()) {
-                    temp.add(new Person(
+                    temp.add(new Patient(
                             person.getFirstName(),
                             person.getLastName(),
                             person.getBirthdata()
@@ -343,14 +288,16 @@ public class PersonService implements WebMvcConfigurer {
         return temp;
     }
  */
-    public static List<Person> getDataWithoutSensibleInfos(List<Person> personList){
-        return getDataWithoutSensibleInfos(false, personList);
+    public static List<Patient> getDataWithoutSensibleInfos(List<Patient> personList){
+        //return getDataWithoutSensibleInfos(false, personList);
+        return personList;
     }
-    public static List<Person> getDataWithoutSensibleInfos(boolean isAdmin, List<Person> personList){
+    /*
+    public static List<Patient> getDataWithoutSensibleInfos(boolean isAdmin, List<Patient> personList){
         if(isAdmin) {
             if (CARE_ABOUT_PERSONAL_DATA) {
-                List<Person> personList1 = new ArrayList<>();
-                for (Person person : personList) {
+                List<Patient> personList1 = new ArrayList<>();
+                for (Patient person : personList) {
                     person.setPassword("***");
                     personList1.add(person);
                 }
@@ -359,8 +306,8 @@ public class PersonService implements WebMvcConfigurer {
                 return personList;
             }
         } else {
-            List<Person> personList1 = new ArrayList<>();
-            for (Person person : personList) {
+            List<Patient> personList1 = new ArrayList<>();
+            for (Patient person : personList) {
                 person.setPassword("");
                 person.setEmail("");
                 person.setBirthdate("");
@@ -369,6 +316,7 @@ public class PersonService implements WebMvcConfigurer {
             return personList1;
         }
     }
+     */
     /*public static Map<String, Boolean> showAllData (boolean isAdmin){
         return Map.of("showAllData", isAdmin);
     }*/
