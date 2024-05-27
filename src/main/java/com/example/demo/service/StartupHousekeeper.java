@@ -14,12 +14,17 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
     @Autowired
     PersonController personController;
 
+    @Autowired
+    ProgramService personService;
+
     private static final Logger log = LoggerFactory.getLogger(StartupHousekeeper.class);
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
         // do whatever you need here
         log.info("Start");
-        personController.createNewDataIfNotCreated();
+        if(personService.CREATE_DB_DATA_ON_STARTUP && personController.isDatabaseEmpty()) {
+            personController.createNewDataIfNotCreated();
+        }
     }
 }

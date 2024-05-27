@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.Patient;
+import com.example.demo.entity.Position;
+import com.example.demo.entity.Verordnung;
 import com.github.javafaker.Faker;
 import jakarta.persistence.Column;
 import lombok.Setter;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -26,19 +28,19 @@ import java.util.concurrent.ThreadLocalRandom;
 //@EnableWebMvc
 @Service
 @Component
-public class PersonService implements WebMvcConfigurer {
+public class ProgramService implements WebMvcConfigurer {
 
     public static final String MESSAGE_ERROR_WRONG_PARAMETERS = "ERROR: Wrong parameters for admin account.";
     public static final String MESSAGE_ERROR_EMPTY_PARAMETERS = "ERROR: Empty parameters for admin account.";
     private static final String TEXT_EMAIL_ADDRESS_FOR_PERSON = "@gmail.com";
-    private static final Logger log = LoggerFactory.getLogger(PersonService.class);
+    private static final Logger log = LoggerFactory.getLogger(ProgramService.class);
     public final String DATABASE_NAME = "PERSON";
     public final String NAME_FOR_MODEL_DATA = "persons";
     public final String NAME_FOR_MODEL_MESSAGE = "message";
     public final String NAME_FOR_MODEL_PERMISSION = "showAllData";
     private static final boolean CARE_ABOUT_PERSONAL_DATA = true;
     public final boolean CREATE_DB_DATA_ON_STARTUP = true;
-    private static int COUNT_PERSON_DATA = 10;
+    private static int COUNT_DATA = 10;
     private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
     @Setter
     private static boolean CREATE_DATA_FOR_TEST = false;
@@ -130,8 +132,9 @@ public class PersonService implements WebMvcConfigurer {
         }
     }
     //private static final String pathToWebFiles = "/resources/webapp";
-    public static List<Patient> createNewDataWithAdmin() {
-        List<Patient> personList = new ArrayList<>();
+    /*
+    public static List<Verordnung> createNewDataWithAdmin() {
+        List<Verordnung> elementList = new ArrayList<>();
         /*
         if(CREATE_DATA_FOR_TEST) {
             // Create person with specific data for test (test with random data is difficult)
@@ -140,60 +143,115 @@ public class PersonService implements WebMvcConfigurer {
             personList.add(getNewPersonForTest(true));
             COUNT_PERSON_DATA = COUNT_PERSON_DATA - 2;
         }
-         */
+         *
         // Create admin person
         log.info("Creating data for admin.");
-        personList.add(getNewPerson(true));
+        elementList.add(createNewPerson(true));
         // Create random person
-        personList.addAll(createNewData());
-        log.info("Creating "+personList.size()+" data for persons.");
-        return personList;
+        elementList.addAll(createNewData());
+        log.info("Creating "+elementList.size()+" data for persons.");
+        return elementList;
     }
-    public static List<Patient> createNewData() {
-        return createNewData(COUNT_PERSON_DATA);
+    */
+    public static List<Verordnung> createNewData() {
+        return createNewData(COUNT_DATA);
     }
-
-    public static List<Patient> createNewData(int countPersonData) {
-        List<Patient> personList = new ArrayList<>();
+    /*
+    public static List<Verordnung> createNewData(int countPersonData) {
+        List<Verordnung> elementList = new ArrayList<>();
         Patient person = null;
         if(HAVE_MORE_THAN_1_ADMIN && ! CREATE_DATA_FOR_TEST) {
             // Create another admin account with random data
             person = getNewPerson(true);
             log.info("Creating data for random person. [" + person.toString() + "]");
-            personList.add(person);
+            elementList.add(person);
             countPersonData -= 1;
         }
         for (int i = 0; i < countPersonData; i++) {
             person = getNewPerson();
             log.info("Creating data for random person #"+(i+1)+". ["+person.toString()+"]");
-            personList.add(person);
+            elementList.add(person);
         }
-        return personList;
+        return elementList;
     }
-    /*
-    public static List<Patient> createNewDataForTest() {
-        List<Patient> personList = new ArrayList<>();
-        Patient person = getNewPersonForTest(true);
-        log.info("Creating data for test person 1. ["+person.toString()+"]");
-        personList.add(person);
-        person = getNewPersonForTest(false);
-        log.info("Creating data for test person 2. ["+person.toString()+"]");
-        personList.add(person);
-        return personList;
+    */
+    static List<Verordnung> createNewData(int count){
+        List<Verordnung> verordnungList = new ArrayList<>();
+        for(int i=0; i<count; i++) {
+            Patient patient = createNewPerson();
+            Position position = createNewPosition();
+            Verordnung verordnung = createNewVerordnung(patient, position);
+            log.info(verordnung.toString());
+            verordnungList.add(verordnung);
+        }
+        log.info("Created "+verordnungList.size()+" data.");
+        return verordnungList;
     }
-     */
 
-    static Patient getNewPerson () {
-        return getNewPerson(false);
+    static Verordnung createNewVerordnung(Patient patient, Position position){
+        Verordnung verordnung = new Verordnung();
+        verordnung.setBelegnummer(String.valueOf(getRandomNumberWithLength(2)));
+        verordnung.setAusstellungsdatum(
+                Date.from(Instant.now())
+        );
+        verordnung.setKostentraeger(
+                new Faker().address().cityName()
+        );
+        // test
+        String test = "";
+        if((test = String.valueOf(getRandomNumberWithLength(9))).length() > 9){
+            log.info(test);
+        }
+        // test
+        verordnung.setBetriebsstaettennummer(
+                String.valueOf(getRandomNumberWithLength(9))
+        );
+        verordnung.setVertragsarztnummer(
+                String.valueOf(getRandomNumberWithLength(9))
+        );
+        verordnung.setPatient_id(patient);
+        verordnung.setPosition_id(position);
+        return verordnung;
     }
+
+
     Instant now = Instant.now();
+
     private final static LocalDate date = LocalDate.now(ZoneId.of("Europe/Berlin"));
-    static Patient getNewPerson (boolean isAdmin) {
+
+    static Position createNewPosition(){
+        Position position = new Position();
+        position.setPositionsnummer(
+                String.valueOf(getRandomNumberWithLength(20))
+        );
+        position.setPositionstext(
+                RandomText.getText().substring(0, 100)
+        );
+        position.setEinzelpreis(
+                getRandomNumberWithLength(9)
+        );
+        position.setMenge(
+                getRandomNumberWithLength(6)
+        );
+        position.setMehrwertsteuersatz(
+                getRandomNumberWithLength(4)
+        );
+        return position;
+    }
+
+    static Patient createNewPerson() {
+        /*
+        // test
+        if(isAdmin){
+
+        }
+        */
         Faker faker = new Faker();
         String firstname = faker.name().firstName();
         String lastname = faker.name().lastName();
         String street = faker.address().streetName();
-        String plz = String.valueOf(10000  + new Random().nextInt(90000));
+        //String plz = String.valueOf(10000  + new Random().nextInt(90000));
+        String plz = String.valueOf(getRandomNumberWithLength(5));
         String city = faker.address().cityName();
         int randomDay = ThreadLocalRandom.current().nextInt(1, 30 + 1);
         int randomMonth = ThreadLocalRandom.current().nextInt(1, 12 + 1);
@@ -221,7 +279,7 @@ public class PersonService implements WebMvcConfigurer {
             return new Patient(
                     Data4Test.Admin.Name.firstname.toString(),
                     Data4Test.Admin.Name.lastname.toString(),
-                    Data4Test.Admin.Name.firstname.toString().charAt(0) + "." + Data4Test.Admin.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    Data4Test.Admin.Name.firstname.toString().charAt(0) + "." + Data4Test.Admin.Name.lastname.toString() + ProgramService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                     RandomStringUtils.random(10, true, true),
                     birthdate,
                     isAdmin
@@ -234,7 +292,7 @@ public class PersonService implements WebMvcConfigurer {
             return new Patient(
                     Data4Test.Normal.Name.firstname.toString(),
                     Data4Test.Normal.Name.lastname.toString(),
-                    Data4Test.Normal.Name.firstname.toString().charAt(0) + "." + Data4Test.Normal.Name.lastname.toString() + PersonService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
+                    Data4Test.Normal.Name.firstname.toString().charAt(0) + "." + Data4Test.Normal.Name.lastname.toString() + ProgramService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
                     RandomStringUtils.random(10, true, true),
                     birthdate,
                     isAdmin
@@ -288,12 +346,11 @@ public class PersonService implements WebMvcConfigurer {
         return temp;
     }
  */
-    public static List<Patient> getDataWithoutSensibleInfos(List<Patient> personList){
-        //return getDataWithoutSensibleInfos(false, personList);
-        return personList;
+    public static List<Verordnung> getDataWithoutSensibleInfos(List<Verordnung> verordnungList){
+        return getDataWithoutSensibleInfos(false, verordnungList);
     }
-    /*
-    public static List<Patient> getDataWithoutSensibleInfos(boolean isAdmin, List<Patient> personList){
+    public static List<Verordnung> getDataWithoutSensibleInfos(boolean isAdmin, List<Verordnung> verordnungList){
+        /*
         if(isAdmin) {
             if (CARE_ABOUT_PERSONAL_DATA) {
                 List<Patient> personList1 = new ArrayList<>();
@@ -315,9 +372,58 @@ public class PersonService implements WebMvcConfigurer {
             }
             return personList1;
         }
+        */
+        return verordnungList;
+    }
+    /*
+    public static Map<String, Boolean> showAllData (boolean isAdmin){
+        return Map.of("showAllData", isAdmin);
+    }
+    */
+
+    static int getRandomNumberWithLength(int length){
+        return  new Random().nextInt(
+                ((int)(Math.pow(90, length-1))
+                - (int)(Math.pow(10, length-1)))
+                + (int)(Math.pow(10, length-1))
+        );
+    }
+    /*
+    static int getRandomNumberWithLength(int length){
+        int number = 0;
+        switch (length){
+            case 1:
+                number = 1 + new Random().nextInt(9);
+                break;
+            case 2:
+                number = 10 + new Random().nextInt(99);
+                break;
+            case 3:
+                number = 100 + new Random().nextInt(999);
+                break;
+            case 4:
+                number = 1000 + new Random().nextInt(9999);
+                break;
+            case 5:
+                number = 10000 + new Random().nextInt(99999);
+                break;
+            case 6:
+                number = 100000 + new Random().nextInt(999999);
+                break;
+            case 7:
+                number = 1000000 + new Random().nextInt(9999999);
+                break;
+            case 8:
+                number = 10000000 + new Random().nextInt(99999999);
+                break;
+            case 9:
+                number = 100000000 + new Random().nextInt(999999999);
+                break;
+        }
+        return number;
     }
      */
-    /*public static Map<String, Boolean> showAllData (boolean isAdmin){
-        return Map.of("showAllData", isAdmin);
-    }*/
+    static int getRandomNumberWithLength(int length, int maxValue){
+        return  (int)Math.pow(10, length-1)  + new Random().nextInt((int)(Math.pow(maxValue, length-1)));
+    }
 }

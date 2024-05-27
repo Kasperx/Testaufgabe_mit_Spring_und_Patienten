@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Patient;
-import com.example.demo.repository.PersonRepository;
-import com.example.demo.service.PersonService;
+import com.example.demo.entity.Verordnung;
+import com.example.demo.repository.VerordnungRepository;
+import com.example.demo.service.ProgramService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.demo.service.PersonService.*;
+import static com.example.demo.service.ProgramService.*;
 
 @RestController
 //@Controller
@@ -30,7 +30,7 @@ public class PersonController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
 
-    //private final PersonRepository personRepository;
+    //private final VerordnungRepository personRepository;
 
     @Autowired
     Environment environment;
@@ -39,16 +39,16 @@ public class PersonController {
     JdbcTemplate jdbcTemplate;
 
     @Autowired
-    PersonRepository personRepository;
+    VerordnungRepository verordnungRepository;
 
     @Autowired
-    PersonService personService;
+    ProgramService programService;
 
     //@Autowired
     //ViewPerson viewPerson;
     final String htmlFile = "index.html";
 
-    //public PersonController(PersonRepository frontendController) { this.personRepository = frontendController; }
+    //public PersonController(VerordnungRepository frontendController) { this.personRepository = frontendController; }
 
     @PostMapping("/createMoreData")
     @ResponseStatus(code = HttpStatus.OK)
@@ -63,7 +63,7 @@ public class PersonController {
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 if(isDatabaseEmpty()) {
-                    createNewData(true);
+                    programService.createNewData();
                     model.addAttribute("message",
                         "Created new data with admin account(s).");
                 } else {
@@ -71,24 +71,24 @@ public class PersonController {
                     model.addAttribute("message",
                         "Created new data.");
                 }
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, true);
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(verordnungRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, true);
             }
             case EMPTY_PARAMETER -> {
-                log.error(PersonService.IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not create new data: " + PersonService.IsAdmin.EMPTY_PARAMETER.toString());
+                log.error(ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
+                        "Did not create new data: " + ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(verordnungRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
             }
             case WRONG_PARAMETER -> {
-                log.error(PersonService.IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not create new data: " + PersonService.IsAdmin.WRONG_PARAMETER.toString());
+                log.error(ProgramService.IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
+                        "Did not create new data: " + ProgramService.IsAdmin.WRONG_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(verordnungRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
             }
         }
         return modelAndView;
@@ -126,31 +126,31 @@ public class PersonController {
             HttpServletResponse httpServletResponse){
         switch (isAdminAccount(username, pw)) {
             case YES -> {
-                Optional<Patient> optionalPerson = personRepository.findById(id);
+                Optional<Verordnung> optionalPerson = verordnungRepository.findById(id);
                 if(optionalPerson.isPresent()) {
-                    personRepository.delete(optionalPerson.get());
+                    verordnungRepository.delete(optionalPerson.get());
                 } else {
                     log.error("Error: Did not find data with id {}", id);
-                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                            "Did not find person with id "+id+" -> did not remove data: " + PersonService.IsAdmin.EMPTY_PARAMETER.toString());
+                    model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
+                            "Did not find person with id "+id+" -> did not remove data: " + ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
                     httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 }
             }
             case EMPTY_PARAMETER -> {
-                log.error(PersonService.IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not remove data: " + PersonService.IsAdmin.EMPTY_PARAMETER.toString());
+                log.error(ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
+                        "Did not remove data: " + ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
             case WRONG_PARAMETER -> {
-                log.error(PersonService.IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not remove data: " + PersonService.IsAdmin.WRONG_PARAMETER.toString());
+                log.error(ProgramService.IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
+                        "Did not remove data: " + ProgramService.IsAdmin.WRONG_PARAMETER.toString());
                 httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             }
         }
     }
-
+    /*
     @GetMapping("")
     public ModelAndView loadData(
             @RequestParam(required = false) String username,
@@ -162,27 +162,47 @@ public class PersonController {
         switch (isAdminAccount(username, pw)) {
             case YES -> {
                 log.info(IsAdmin.YES.toString());
-                if(personService.CREATE_DB_DATA_ON_STARTUP && isDatabaseEmpty()) {
-                    createNewData(true);
-                    model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, "Created new data with admin account(s).");
-                }
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
             case EMPTY_PARAMETER -> {
                 log.error(IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE, IsAdmin.EMPTY_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
             case WRONG_PARAMETER -> {
                 log.error(IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_PERMISSION, false);
-                model.addAttribute(personService.NAME_FOR_MODEL_MESSAGE, IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
+                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
+                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE, IsAdmin.WRONG_PARAMETER.toString());
+                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
             }
         }
         //model.addAttribute("Patient", viewPerson);
         return modelAndView;
+    }
+    */
+    @GetMapping("")
+    public List<Verordnung> loadData(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String pw
+    ){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(htmlFile);
+        switch (isAdminAccount(username, pw)) {
+            case YES -> {
+                log.info(IsAdmin.YES.toString());
+                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
+            }
+            case EMPTY_PARAMETER -> {
+                log.error(IsAdmin.EMPTY_PARAMETER.toString());
+                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
+            }
+            case WRONG_PARAMETER -> {
+                log.error(IsAdmin.WRONG_PARAMETER.toString());
+                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
+            }
+        }
+        return null;
     }
     /*
     @GetMapping("")
@@ -213,26 +233,14 @@ public class PersonController {
 
     public void createNewDataIfNotCreated(){
         if(isDatabaseEmpty()){
-            List<Patient> personList = createNewDataWithAdmin();
-            log.info("Saving all "+personList.size()+" data to database.");
-            personRepository.saveAll(personList);
+            List<Verordnung> verordnungList = programService.createNewData();
+            log.info("Saving all "+verordnungList.size()+" data to database.");
+            verordnungRepository.saveAll(verordnungList);
         }
     }
-    public void createNewData(){
-        createNewData(false);
-    }
-    public void createNewData(boolean withAdmin){
-        List<Patient> personList = null;
-        if(withAdmin) {
-            personList = createNewDataWithAdmin();
-        } else {
-            personList = PersonService.createNewData();
-        }
-        log.info("Saving all " + personList.size() + " data to database.");
-        personRepository.saveAll(personList);
-    }
+
     public boolean isDatabaseEmpty(){
-        return jdbcTemplate.queryForList("select * from " + personService.DATABASE_NAME + " limit 1;").isEmpty();
+        return jdbcTemplate.queryForList("select * from " + programService.DATABASE_NAME + " limit 1;").isEmpty();
     }
 
     /*@Service

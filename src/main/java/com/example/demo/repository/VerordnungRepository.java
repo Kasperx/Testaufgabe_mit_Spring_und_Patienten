@@ -1,17 +1,14 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.Patient;
+import com.example.demo.entity.Verordnung;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-//public interface PersonRepository extends CrudRepository<Patient, Integer> {
+//public interface VerordnungRepository extends CrudRepository<Patient, Integer> {
 @Repository
 @Transactional
-public interface PersonRepository extends JpaRepository<Patient, Integer> {
+public interface VerordnungRepository extends JpaRepository<Verordnung, Integer> {
 
     /*
     @Query(

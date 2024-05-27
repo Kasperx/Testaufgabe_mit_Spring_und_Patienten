@@ -51,4 +51,19 @@ public class Verordnung {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "position_id", referencedColumnName = "id")
     Position position_id;
+
+    @Override
+    public String toString() {
+        return "Verordnung{" +
+                "serialId=" + serialId +
+                ", id=" + id +
+                ", Belegnummer='" + Belegnummer + '\'' +
+                ", Ausstellungsdatum=" + Ausstellungsdatum +
+                ", Kostentraeger='" + Kostentraeger + '\'' +
+                ", Betriebsstaettennummer='" + Betriebsstaettennummer + '\'' +
+                ", Vertragsarztnummer='" + Vertragsarztnummer + '\'' +
+                ", patient_id=" + patient_id +
+                ", position_id=" + position_id +
+                '}';
+    }
 }

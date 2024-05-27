@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-//import static com.example.demo.service.PersonService.getPasswordString;
-import static com.example.demo.service.PersonService.getTabsForConsoleOut;
+//import static com.example.demo.service.ProgramService.getPasswordString;
+
 
 @Entity
 @Getter
