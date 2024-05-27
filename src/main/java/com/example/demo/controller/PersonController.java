@@ -211,17 +211,17 @@ public class PersonController {
     }
     */
 
-    private void createNewDataIfNotCreated(){
+    public void createNewDataIfNotCreated(){
         if(isDatabaseEmpty()){
             List<Patient> personList = createNewDataWithAdmin();
             log.info("Saving all "+personList.size()+" data to database.");
             personRepository.saveAll(personList);
         }
     }
-    private void createNewData(){
+    public void createNewData(){
         createNewData(false);
     }
-    private void createNewData(boolean withAdmin){
+    public void createNewData(boolean withAdmin){
         List<Patient> personList = null;
         if(withAdmin) {
             personList = createNewDataWithAdmin();
@@ -231,7 +231,7 @@ public class PersonController {
         log.info("Saving all " + personList.size() + " data to database.");
         personRepository.saveAll(personList);
     }
-    private boolean isDatabaseEmpty(){
+    public boolean isDatabaseEmpty(){
         return jdbcTemplate.queryForList("select * from " + personService.DATABASE_NAME + " limit 1;").isEmpty();
     }
 
