@@ -92,6 +92,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
+		<!-- this enables using annotation like size for columns -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 		<!-- andere -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

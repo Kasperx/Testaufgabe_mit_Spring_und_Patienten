@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -178,7 +178,7 @@ public class ProgramService implements WebMvcConfigurer {
     static List<Verordnung> createNewData(int count){
         List<Verordnung> verordnungList = new ArrayList<>();
         for(int i=0; i<count; i++) {
-            Patient patient = createNewPerson();
+            Patient patient = createNewPatient();
             Position position = createNewPosition();
             Verordnung verordnung = createNewVerordnung(patient, position);
             log.info(verordnung.toString());
@@ -197,12 +197,6 @@ public class ProgramService implements WebMvcConfigurer {
         verordnung.setKostentraeger(
                 new Faker().address().cityName()
         );
-        // test
-        String test = "";
-        if((test = String.valueOf(getRandomNumberWithLength(9))).length() > 9){
-            log.info(test);
-        }
-        // test
         verordnung.setBetriebsstaettennummer(
                 String.valueOf(getRandomNumberWithLength(9))
         );
@@ -220,26 +214,34 @@ public class ProgramService implements WebMvcConfigurer {
     private final static LocalDate date = LocalDate.now(ZoneId.of("Europe/Berlin"));
 
     static Position createNewPosition(){
+        DecimalFormat format = new DecimalFormat();
+        format.setMaximumFractionDigits(2);
         Position position = new Position();
         position.setPositionsnummer(
                 String.valueOf(getRandomNumberWithLength(20))
         );
+        String text = RandomText.getText();
         position.setPositionstext(
-                RandomText.getText().substring(0, 100)
+                text.length() <= 100
+                        ? text
+                        : text.substring(0, 99)
         );
         position.setEinzelpreis(
-                getRandomNumberWithLength(9)
+                String.format("%.02f",
+                        getRandomFloatWithLength(9-2))
         );
         position.setMenge(
-                getRandomNumberWithLength(6)
+                String.format("%.02f",
+                        getRandomFloatWithLength(6-2))
         );
         position.setMehrwertsteuersatz(
-                getRandomNumberWithLength(4)
+                String.format("%.02f",
+                        getRandomFloatWithLength(4-2))
         );
         return position;
     }
 
-    static Patient createNewPerson() {
+    static Patient createNewPatient() {
         /*
         // test
         if(isAdmin){
@@ -269,37 +271,6 @@ public class ProgramService implements WebMvcConfigurer {
                 city
         );
     }
-    /*
-    static Patient getNewPersonForTest (boolean isAdmin) {
-        if(isAdmin) {
-            String birthdate = LocalDate.of(Data4Test.Admin.Date.randomyear.value,
-                            Data4Test.Admin.Date.randommonth.value,
-                            Data4Test.Admin.Date.radnomday.value)
-                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            return new Patient(
-                    Data4Test.Admin.Name.firstname.toString(),
-                    Data4Test.Admin.Name.lastname.toString(),
-                    Data4Test.Admin.Name.firstname.toString().charAt(0) + "." + Data4Test.Admin.Name.lastname.toString() + ProgramService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
-                    RandomStringUtils.random(10, true, true),
-                    birthdate,
-                    isAdmin
-            );
-        } else {
-            String birthdate = LocalDate.of(Data4Test.Normal.Date.randomyear.value,
-                            Data4Test.Normal.Date.randommonth.value,
-                            Data4Test.Normal.Date.radnomday.value)
-                    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            return new Patient(
-                    Data4Test.Normal.Name.firstname.toString(),
-                    Data4Test.Normal.Name.lastname.toString(),
-                    Data4Test.Normal.Name.firstname.toString().charAt(0) + "." + Data4Test.Normal.Name.lastname.toString() + ProgramService.TEXT_EMAIL_ADDRESS_FOR_PERSON,
-                    RandomStringUtils.random(10, true, true),
-                    birthdate,
-                    isAdmin
-            );
-        }
-    }
-     */
 
     public static List<Patient> convertObjectToPerson(List<Object> objects){
         if(objects == null){
@@ -382,11 +353,15 @@ public class ProgramService implements WebMvcConfigurer {
     */
 
     static int getRandomNumberWithLength(int length){
-        return  new Random().nextInt(
-                ((int)(Math.pow(90, length-1))
+        return new Random().nextInt(
+                ((int)(Math.pow(10, length))-1
                 - (int)(Math.pow(10, length-1)))
                 + (int)(Math.pow(10, length-1))
         );
+    }
+    static float getRandomFloatWithLength(int length){
+        // float random = min + r.nextFloat() * (max - min);
+        return (int)(Math.pow(10, length-1)) + new Random().nextFloat() * ((int)(Math.pow(10, length)-1) - (int)(Math.pow(10, length-1)));
     }
     /*
     static int getRandomNumberWithLength(int length){
@@ -423,7 +398,4 @@ public class ProgramService implements WebMvcConfigurer {
         return number;
     }
      */
-    static int getRandomNumberWithLength(int length, int maxValue){
-        return  (int)Math.pow(10, length-1)  + new Random().nextInt((int)(Math.pow(maxValue, length-1)));
-    }
 }

@@ -1,18 +1,8 @@
 package com.example.demo.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.chucknorris.client.ChuckNorrisClient;
-import io.chucknorris.client.Joke;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class RandomText {
@@ -43,12 +33,23 @@ public class RandomText {
 
 // get a random joke with a specifc category
         //Joke joke = client.getRandomJoke("dev");
-        return client.getRandomJoke("dev").toString();
+        return client.getRandomJoke("dev").getValue();
+        //return client.getRandomJoke("dev").toString();
 
 // search jokes with free-text
         //List<Joke> jokes = client.searchJokes("developer");
 
 // get a list of available categories
         //List<String> categories = client.getCategories();
+
+        //return createRandomString();
+    }
+
+    static String createRandomString() {
+
+        int length = 100;
+        boolean useLetters = true;
+        boolean useNumbers = false;
+        return RandomStringUtils.random(length, useLetters, useNumbers);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,17 +23,30 @@ public class Position {
     @Column(name = "Positionsnummer", length = 20)
     String Positionsnummer;
 
-    @Column(name = "Positionstext", length = 100)
+    @Column(name = "Positionstext")
+    @Size(max = 100)
     String Positionstext;
 
-    @Column(name = "Einzelpreis", length = 6)
-    float Einzelpreis;
+    //@Column(name = "Einzelpreis", length = 6)
+    //
 
-    @Column(name = "Menge", length = 6)
-    float Menge;
+    @Column(name = "Einzelpreis")
+    @Size(max = 10) // the dot of the decimal number has one position
+    String Einzelpreis;
 
-    @Column(name = "Mehrwertsteuersatz", length = 4)
-    float Mehrwertsteuersatz;
+    //@Column(name = "Menge", length = 6)
+    //float Menge;
+
+    @Column(name = "Menge")
+    @Size(max = 7) // the dot of the decimal number has one position
+    String Menge;
+
+    //@Column(name = "Mehrwertsteuersatz", length = 4)
+    //float Mehrwertsteuersatz;
+
+    @Column(name = "Mehrwertsteuersatz")
+    @Size(max = 5) // the dot of the decimal number has one position
+    String Mehrwertsteuersatz;
 
     /*
     @Override
