@@ -21,7 +21,6 @@ public class StartupHousekeeper implements ApplicationListener<ContextRefreshedE
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        // do whatever you need here
         log.info("Start");
         if(personService.CREATE_DB_DATA_ON_STARTUP && personController.isDatabaseEmpty()) {
             personController.createNewDataIfNotCreated();

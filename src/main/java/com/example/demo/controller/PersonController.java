@@ -21,16 +21,11 @@ import java.util.Optional;
 import static com.example.demo.service.ProgramService.*;
 
 @RestController
-//@Controller
-//@RequestMapping("/index.html.backup")
-//@RequestMapping("/")
 @RequestMapping("")
 @EnableWebMvc
 public class PersonController {
 
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
-
-    //private final VerordnungRepository personRepository;
 
     @Autowired
     Environment environment;
@@ -44,11 +39,7 @@ public class PersonController {
     @Autowired
     ProgramService programService;
 
-    //@Autowired
-    //ViewPerson viewPerson;
     final String htmlFile = "index.html";
-
-    //public PersonController(VerordnungRepository frontendController) { this.personRepository = frontendController; }
 
     @PostMapping("/createMoreData")
     @ResponseStatus(code = HttpStatus.OK)
@@ -93,29 +84,7 @@ public class PersonController {
         }
         return modelAndView;
     }
-    /*
-    @PostMapping("/findData")
-    @ResponseStatus(code = HttpStatus.OK)
-    public void findData(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String pw,
-            Model model,
-            HttpServletResponse httpServletResponse){
-        Patient person = (Patient) model.getAttribute(personService.NAME_FOR_MODEL_DATA);
-        if(person != null) {
-            List<Patient> personList = null;
-            if (!(personList = personRepository.findByEmail(person.getEmail())).isEmpty()) {
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personList));
-            } else if (!(personList = personRepository.findByEmailStartsWith(person.getEmail())).isEmpty()) {
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personList));
-            } else if (!(personList = personRepository.findByFirstname(person.getFirstname())).isEmpty()) {
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personList));
-            } else if (!(personList = personRepository.findByLastname(person.getLastname())).isEmpty()) {
-                model.addAttribute(personService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(true, personList));
-            }
-        }
-    }
-     */
+
     @PostMapping("/removeData/{id}")
     @ResponseStatus(code = HttpStatus.OK)
     public void removeData(
@@ -181,29 +150,27 @@ public class PersonController {
         return modelAndView;
     }
     */
-    @GetMapping("")
-    public List<Verordnung> loadData(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String pw
-    ){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName(htmlFile);
-        switch (isAdminAccount(username, pw)) {
-            case YES -> {
-                log.info(IsAdmin.YES.toString());
-                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
-            }
-            case EMPTY_PARAMETER -> {
-                log.error(IsAdmin.EMPTY_PARAMETER.toString());
-                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
-            }
-            case WRONG_PARAMETER -> {
-                log.error(IsAdmin.WRONG_PARAMETER.toString());
-                return getDataWithoutSensibleInfos(verordnungRepository.findAll());
+    @GetMapping("/kundennummer")
+    @ResponseBody
+    public Verordnung loadData(@RequestParam String id){
+        List<Verordnung> verordnungList = verordnungRepository.findAll();
+        if(!verordnungList.isEmpty()){
+            // find patient.id.versichertennummer -> compare with parameter
+            for(Verordnung verordnung: verordnungList){
+                if(id.equals(verordnung.getPatient_id().getVersichertennummer())){
+                    log.info("Found: Verordnung id="+verordnung.getId()+" with Patient.id = "+id);
+                    return verordnung;
+                }
             }
         }
         return null;
     }
+
+    @GetMapping("")
+    public List<Verordnung> loadData(){
+        return getDataWithoutSensibleInfos(verordnungRepository.findAll());
+    }
+
     /*
     @GetMapping("")
     public List<Patient> loadData(
