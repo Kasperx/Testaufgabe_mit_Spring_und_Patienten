@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -152,18 +153,22 @@ public class PersonController {
     */
     @GetMapping("/kundennummer")
     @ResponseBody
-    public Verordnung loadData(@RequestParam String id){
+    public List<Verordnung> loadData(@RequestParam String id){
         List<Verordnung> verordnungList = verordnungRepository.findAll();
+        List<Verordnung> results = null;
         if(!verordnungList.isEmpty()){
             // find patient.id.versichertennummer -> compare with parameter
             for(Verordnung verordnung: verordnungList){
                 if(id.equals(verordnung.getPatient_id().getVersichertennummer())){
+                    if(results == null){
+                        results = new ArrayList<>();
+                    }
                     log.info("Found: Verordnung id="+verordnung.getId()+" with Patient.id = "+id);
-                    return verordnung;
+                    results.add(verordnung);
                 }
             }
         }
-        return null;
+        return results;
     }
 
     @GetMapping("")
