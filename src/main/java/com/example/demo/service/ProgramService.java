@@ -18,10 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -256,8 +253,9 @@ public class ProgramService implements WebMvcConfigurer {
         YES(""),
         AUSSTELLUNGSDATUM_VOR_EINREICHUNGSDATUM("Fehler: Ausstellungsdatum der Verordnung liegt zeitlich vor dem Einreichungsdatum."),
         GEBURTSDATUM_VOR_AUSSTELLUNGSDATUM("Fehler: Geburtsdatum liegt zeitlich vor dem Ausstellungsdatum der Verordnung."),
-        BELEG_MEHRFACH_VORHANDEN("Beleg ist mehrfach vorhanden. Belegnummer muss stets eindeutig je Kundennummer sein"),
-        SOMETHING_ELSE("Somethign really strange happens here.");
+        BELEG_MEHRFACH_VORHANDEN("Fehler: Beleg ist mehrfach vorhanden. Belegnummer muss stets eindeutig je Kundennummer sein"),
+        SOMETHING_ELSE("Something really strange happens here."),
+        EMPTY_PARAMETER("Fehler: Eingabeparameter ist leer.");
         String text;
         IsDataValid(String text){
             this.text = text;
@@ -269,8 +267,30 @@ public class ProgramService implements WebMvcConfigurer {
     }
 
     public IsDataValid isDataValid(String ausstellungsdatum, String einreichungsdatum, String geburtstag, Verordnung verordnung){
-        return isDataValid(ausstellungsdatum, einreichungsdatum, geburtstag, verordnung.getBelegnummer());
+        return isDataValid(
+                ausstellungsdatum,
+                einreichungsdatum,
+                geburtstag,
+                verordnung.getBelegnummer()
+        );
     }
+
+    public IsDataValid isDataValid(Verordnung verordnung){
+        return isDataValid(
+                localdatetimeToString(
+                        verordnung
+                                .getAusstellungsdatum()),
+                localdatetimeToString(
+                        instantToLocaldatetime(
+                                Instant.now())),
+                localdateToString(
+                        verordnung
+                                .getPatient_id()
+                                .getGeburtsdatum()),
+                verordnung.getBelegnummer()
+        );
+    }
+
     public IsDataValid isDataValid(String ausstellungsdatum, String einreichungsdatum, String geburtstag, String belegnummer){
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -280,7 +300,7 @@ public class ProgramService implements WebMvcConfigurer {
         // Get all verordnung -> belegnummern
         if(StringUtils.isNotBlank(belegnummer)) {
             Optional<Verordnung> optionalVerordnung = verordnungRepository.findVerordnungByBelegnummer(belegnummer);
-            if (optionalVerordnung.isPresent() && optionalVerordnung.stream().toList().size() > 1) {
+            if (optionalVerordnung.isPresent() && ! optionalVerordnung.stream().toList().isEmpty()) {
                 return IsDataValid.BELEG_MEHRFACH_VORHANDEN;
             }
         }
@@ -292,5 +312,19 @@ public class ProgramService implements WebMvcConfigurer {
         } else {
             return IsDataValid.SOMETHING_ELSE;
         }
+    }
+
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+
+    static String localdatetimeToString(LocalDateTime ldt){
+        return ldt.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+    }
+
+    static String localdateToString(LocalDate ld){
+        return ld.format(formatter);
+    }
+
+    static LocalDateTime instantToLocaldatetime(Instant instant){
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 }

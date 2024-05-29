@@ -9,9 +9,8 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Table(name = "PATIENT")
 public class Patient {
 
