@@ -36,4 +36,5 @@ public interface VerordnungRepository extends JpaRepository<Verordnung, Integer>
     )
      */
     //Optional<Patient> findByPatientVersichertennummer(String Versichertennummer);
+    Optional<Verordnung> findVerordnungByBelegnummer(String belegnummer);
 }
