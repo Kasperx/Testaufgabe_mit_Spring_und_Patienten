@@ -5,6 +5,7 @@ import com.example.demo.entity.Position;
 import com.example.demo.entity.Verordnung;
 import com.github.javafaker.Faker;
 import jakarta.persistence.Column;
+import lombok.Data;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,15 +18,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
-//@Configuration
-//@EnableWebMvc
 @Service
 @Component
 public class ProgramService implements WebMvcConfigurer {
@@ -57,6 +59,7 @@ public class ProgramService implements WebMvcConfigurer {
     private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMMONTH = 12;
     private final static int DATA_FOR_TEST_ADMIN_BIRTHDAY_RANDOMYEAR = 1950;
      */
+    static String DATE_FORMAT = "yyyy.MM.dd";
 
     /*
     @Bean
@@ -131,50 +134,11 @@ public class ProgramService implements WebMvcConfigurer {
             }
         }
     }
-    //private static final String pathToWebFiles = "/resources/webapp";
-    /*
-    public static List<Verordnung> createNewDataWithAdmin() {
-        List<Verordnung> elementList = new ArrayList<>();
-        /*
-        if(CREATE_DATA_FOR_TEST) {
-            // Create person with specific data for test (test with random data is difficult)
-            personList.add(getNewPersonForTest(false));
-            // Create person with specific data for test (test with random data is difficult)
-            personList.add(getNewPersonForTest(true));
-            COUNT_PERSON_DATA = COUNT_PERSON_DATA - 2;
-        }
-         *
-        // Create admin person
-        log.info("Creating data for admin.");
-        elementList.add(createNewPerson(true));
-        // Create random person
-        elementList.addAll(createNewData());
-        log.info("Creating "+elementList.size()+" data for persons.");
-        return elementList;
-    }
-    */
+
     public static List<Verordnung> createNewData() {
         return createNewData(COUNT_DATA);
     }
-    /*
-    public static List<Verordnung> createNewData(int countPersonData) {
-        List<Verordnung> elementList = new ArrayList<>();
-        Patient person = null;
-        if(HAVE_MORE_THAN_1_ADMIN && ! CREATE_DATA_FOR_TEST) {
-            // Create another admin account with random data
-            person = getNewPerson(true);
-            log.info("Creating data for random person. [" + person.toString() + "]");
-            elementList.add(person);
-            countPersonData -= 1;
-        }
-        for (int i = 0; i < countPersonData; i++) {
-            person = getNewPerson();
-            log.info("Creating data for random person #"+(i+1)+". ["+person.toString()+"]");
-            elementList.add(person);
-        }
-        return elementList;
-    }
-    */
+
     static List<Verordnung> createNewData(int count){
         List<Verordnung> verordnungList = new ArrayList<>();
         for(int i=0; i<count; i++) {
@@ -188,11 +152,18 @@ public class ProgramService implements WebMvcConfigurer {
         return verordnungList;
     }
 
+    static long getYearInMilliseconds(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2024);
+        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
+        return TimeUnit.DAYS.toMillis(daysInYear);
+    }
+
     static Verordnung createNewVerordnung(Patient patient, Position position){
         Verordnung verordnung = new Verordnung();
         verordnung.setBelegnummer(String.valueOf(getRandomNumberWithLength(2)));
         verordnung.setAusstellungsdatum(
-                Date.from(Instant.now())
+                LocalDateTime.now().plusYears(1l)
         );
         verordnung.setKostentraeger(
                 new Faker().address().cityName()
@@ -205,6 +176,7 @@ public class ProgramService implements WebMvcConfigurer {
         );
         verordnung.setPatient_id(patient);
         verordnung.setPosition_id(position);
+        verordnung.setDatum_erstellt(LocalDateTime.now());
         return verordnung;
     }
 
@@ -226,28 +198,29 @@ public class ProgramService implements WebMvcConfigurer {
                         ? text
                         : text.substring(0, 99)
         );
+        // Calculate minus 2 for position with commata
         position.setEinzelpreis(
                 String.format("%.02f",
-                        getRandomFloatWithLength(9-2))
+                        //getRandomFloatWithLength(9-2))
+                        getRandomFloatWithLength(
+                                getRandomNumberWithMaxLength(9)-2))
         );
+        // Calculate minus 2 for position with commata
         position.setMenge(
                 String.format("%.02f",
-                        getRandomFloatWithLength(6-2))
+                        getRandomFloatWithLength(
+                                getRandomNumberWithMaxLength(6)-2))
         );
+        // Calculate minus 2 for position with commata
         position.setMehrwertsteuersatz(
                 String.format("%.02f",
-                        getRandomFloatWithLength(4-2))
+                        getRandomFloatWithLength(
+                                getRandomNumberWithMaxLength(4)-2))
         );
         return position;
     }
 
     static Patient createNewPatient() {
-        /*
-        // test
-        if(isAdmin){
-
-        }
-        */
         Faker faker = new Faker();
         String firstname = faker.name().firstName();
         String lastname = faker.name().lastName();
@@ -257,10 +230,27 @@ public class ProgramService implements WebMvcConfigurer {
         String city = faker.address().cityName();
         int randomDay = ThreadLocalRandom.current().nextInt(1, 30 + 1);
         int randomMonth = ThreadLocalRandom.current().nextInt(1, 12 + 1);
-        int randomYear = LocalDate.now().getYear() - ThreadLocalRandom.current().nextInt(1, 100 + 1);
-        String birthdate = LocalDate.of(randomYear, randomMonth, randomDay)
-                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-        String randomNumber = String.valueOf(100000000  + new Random().nextInt(900000000));
+        // Regel: Geburtsdatum nicht vor Ausstellungsdatum der Verordnung
+        int randomYear = LocalDate.now().getYear() - ThreadLocalRandom.current().nextInt(1, 100 + 1) + 2;
+        LocalDate birthdate = LocalDate.of(randomYear, randomMonth, randomDay);
+        //String randomNumber = String.valueOf(100000000  + new Random().nextInt(900000000));
+        String randomNumber = String.valueOf(getRandomNumberWithLength(9));
+        Patient patient = new Patient();
+        patient.setVorname(
+                firstname);
+        patient.setNachname(
+                lastname);
+        patient.setGeburtsdatum(
+                birthdate);
+        patient.setVersichertennummer(
+                randomNumber);
+        patient.setStrasse(
+                street);
+        patient.setPLZ(
+                plz);
+        patient.setOrt(
+                city);
+        /*
         return new Patient(
                 firstname,
                 lastname,
@@ -270,6 +260,8 @@ public class ProgramService implements WebMvcConfigurer {
                 plz,
                 city
         );
+         */
+        return patient;
     }
 
     public static List<Patient> convertObjectToPerson(List<Object> objects){
@@ -359,6 +351,13 @@ public class ProgramService implements WebMvcConfigurer {
                 + (int)(Math.pow(10, length-1))
         );
     }
+
+    static int getRandomNumberWithMaxLength(int length){
+        return new Random().nextInt(
+                (length - 1) + 1
+        );
+    }
+
     static float getRandomFloatWithLength(int length){
         // float random = min + r.nextFloat() * (max - min);
         return (int)(Math.pow(10, length-1)) + new Random().nextFloat() * ((int)(Math.pow(10, length)-1) - (int)(Math.pow(10, length-1)));

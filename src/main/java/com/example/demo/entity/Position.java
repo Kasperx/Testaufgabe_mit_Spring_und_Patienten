@@ -18,48 +18,27 @@ public class Position {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true)
-    int id;
+    private int id;
 
     @Column(name = "Positionsnummer", length = 20)
-    String Positionsnummer;
+    private String Positionsnummer;
 
     @Column(name = "Positionstext")
     @Size(max = 100)
-    String Positionstext;
+    private String Positionstext;
 
     //@Column(name = "Einzelpreis", length = 6)
     //
 
     @Column(name = "Einzelpreis")
     @Size(max = 10) // the dot of the decimal number has one position
-    String Einzelpreis;
-
-    //@Column(name = "Menge", length = 6)
-    //float Menge;
+    private String Einzelpreis;
 
     @Column(name = "Menge")
     @Size(max = 7) // the dot of the decimal number has one position
-    String Menge;
-
-    //@Column(name = "Mehrwertsteuersatz", length = 4)
-    //float Mehrwertsteuersatz;
+    private String Menge;
 
     @Column(name = "Mehrwertsteuersatz")
     @Size(max = 5) // the dot of the decimal number has one position
-    String Mehrwertsteuersatz;
-
-    /*
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", age=" + age +
-                ", isAdmin=" + isAdmin +
-                '}';
-    }
-     */
+    private String Mehrwertsteuersatz;
 }

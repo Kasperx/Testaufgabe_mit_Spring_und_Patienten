@@ -24,9 +24,9 @@ import static com.example.demo.service.ProgramService.*;
 @RestController
 @RequestMapping("")
 @EnableWebMvc
-public class PersonController {
+public class ProgramController {
 
-    private static final Logger log = LoggerFactory.getLogger(PersonController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProgramController.class);
 
     @Autowired
     Environment environment;
