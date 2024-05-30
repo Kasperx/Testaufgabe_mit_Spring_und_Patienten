@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,9 @@ import static com.example.demo.service.ProgramService.*;
 @RestController
 @RequestMapping("")
 @EnableWebMvc
-public class PersonController {
+public class ProgramController {
 
-    private static final Logger log = LoggerFactory.getLogger(PersonController.class);
+    private static final Logger log = LoggerFactory.getLogger(ProgramController.class);
 
     @Autowired
     Environment environment;
@@ -150,6 +151,7 @@ public class PersonController {
         //model.addAttribute("Patient", viewPerson);
         return modelAndView;
     }
+
     */
     @GetMapping("/kundennummer")
     @ResponseBody
@@ -169,6 +171,92 @@ public class PersonController {
             }
         }
         return results;
+    }
+
+    @PostMapping("/save")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK, reason = "OK")
+    public ResponseEntity<String> saveData(
+            @RequestParam String ausstellungsdatum,
+            @RequestParam String einreichungsdatum,
+            @RequestParam String geburtstag,
+            @RequestParam String belegnummer
+    ){
+        switch (programService.isDataValid(
+            ausstellungsdatum,
+            einreichungsdatum,
+            geburtstag,
+            belegnummer
+        )){
+            case YES -> {
+                return ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(IsDataValid.YES.toString());
+            }
+            case AUSSTELLUNGSDATUM_VOR_EINREICHUNGSDATUM -> {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(IsDataValid.AUSSTELLUNGSDATUM_VOR_EINREICHUNGSDATUM.toString());
+            }
+            case BELEG_MEHRFACH_VORHANDEN -> {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(IsDataValid.BELEG_MEHRFACH_VORHANDEN.toString());
+            }
+            case GEBURTSDATUM_VOR_AUSSTELLUNGSDATUM -> {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_ACCEPTABLE)
+                        .body(IsDataValid.GEBURTSDATUM_VOR_AUSSTELLUNGSDATUM.toString());
+            }
+            default -> {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(IsDataValid.SOMETHING_ELSE.toString());
+            }
+        }
+    }
+
+    @PostMapping("/save")
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.OK, reason = "OK")
+    public ResponseEntity<String> saveData(
+            @RequestParam Verordnung verordnung
+    ){
+        log.info("Data: {}", verordnung.toString());
+        // Why always null?
+        if(verordnung != null) {
+            switch (programService.isDataValid(verordnung)) {
+                case YES -> {
+                    return ResponseEntity
+                            .status(HttpStatus.CREATED)
+                            .body(IsDataValid.YES.toString());
+                }
+                case AUSSTELLUNGSDATUM_VOR_EINREICHUNGSDATUM -> {
+                    return ResponseEntity
+                            .status(HttpStatus.NOT_ACCEPTABLE)
+                            .body(IsDataValid.AUSSTELLUNGSDATUM_VOR_EINREICHUNGSDATUM.toString());
+                }
+                case BELEG_MEHRFACH_VORHANDEN -> {
+                    return ResponseEntity
+                            .status(HttpStatus.NOT_ACCEPTABLE)
+                            .body(IsDataValid.BELEG_MEHRFACH_VORHANDEN.toString());
+                }
+                case GEBURTSDATUM_VOR_AUSSTELLUNGSDATUM -> {
+                    return ResponseEntity
+                            .status(HttpStatus.NOT_ACCEPTABLE)
+                            .body(IsDataValid.GEBURTSDATUM_VOR_AUSSTELLUNGSDATUM.toString());
+                }
+                default -> {
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body(IsDataValid.SOMETHING_ELSE.toString());
+                }
+            }
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(IsDataValid.EMPTY_PARAMETER.toString());
+        }
     }
 
     @GetMapping("")
