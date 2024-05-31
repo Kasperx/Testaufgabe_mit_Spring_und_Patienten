@@ -14,5 +14,5 @@ import java.util.Optional;
 @Transactional
 public interface VerordnungRepository extends JpaRepository<Verordnung, Integer> {
 
-    Optional<Verordnung> findVerordnungBybelegnummer(String belegnummer);
+    Optional<Verordnung> findVerordnungByBelegnummer(String belegnummer);
 }

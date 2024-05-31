@@ -23,24 +23,24 @@ public class Position {
     private int id;
 
     @Column(name = "Positionsnummer", length = 20)
-    private String Positionsnummer;
+    private String positionsnummer;
 
     @Column(name = "Positionstext")
     @Size(max = 100)
-    private String Positionstext;
+    private String positionstext;
 
     //@Column(name = "Einzelpreis", length = 6)
     //
 
     @Column(name = "Einzelpreis")
     @Size(max = 10) // the dot of the decimal number has one position
-    private String Einzelpreis;
+    private String einzelpreis;
 
     @Column(name = "Menge")
     @Size(max = 7) // the dot of the decimal number has one position
-    private String Menge;
+    private String menge;
 
     @Column(name = "Mehrwertsteuersatz")
     @Size(max = 5) // the dot of the decimal number has one position
-    private String Mehrwertsteuersatz;
+    private String mehrwertsteuersatz;
 }

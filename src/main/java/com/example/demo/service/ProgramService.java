@@ -92,10 +92,6 @@ public class ProgramService implements WebMvcConfigurer {
         return StringUtils.isBlank(username) || StringUtils.isBlank(pw);
     }
 
-    private static final int countCharsFor1Tab = 5;
-
-    private static final int countCharsFor2Tabs = 10;
-
     public static List<Verordnung> createNewData() {
         return createNewData(COUNT_DATA);
     }
@@ -207,7 +203,7 @@ public class ProgramService implements WebMvcConfigurer {
                 randomNumber);
         patient.setStrasse(
                 street);
-        patient.setPLZ(
+        patient.setPlz(
                 plz);
         patient.setOrt(
                 city);
@@ -302,7 +298,7 @@ public class ProgramService implements WebMvcConfigurer {
         LocalDateTime dt_geburtstag = LocalDateTime.parse(geburtstag, formatter);
         // Get all verordnung -> belegnummern
         if(StringUtils.isNotBlank(belegnummer)) {
-            Optional<Verordnung> optionalVerordnung = verordnungRepository.findVerordnungBybelegnummer(belegnummer);
+            Optional<Verordnung> optionalVerordnung = verordnungRepository.findVerordnungByBelegnummer(belegnummer);
             if (optionalVerordnung.isPresent() && ! optionalVerordnung.stream().toList().isEmpty()) {
                 return IsDataValid.BELEG_MEHRFACH_VORHANDEN;
             }
