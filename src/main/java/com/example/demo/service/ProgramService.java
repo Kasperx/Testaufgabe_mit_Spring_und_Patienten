@@ -42,7 +42,10 @@ public class ProgramService implements WebMvcConfigurer {
     private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
     @Setter
     private static boolean CREATE_DATA_FOR_TEST = false;
-    static String DATE_FORMAT = "yyyy.MM.dd";
+    public final static String DATE_FORMAT = "yyyy.MM.dd";
+
+    private static boolean showDateInSpecialFormat = true;
+
     @Autowired
     VerordnungRepository verordnungRepository;
 
@@ -88,10 +91,6 @@ public class ProgramService implements WebMvcConfigurer {
     static boolean isParameterEmpty (String username, String pw) {
         return StringUtils.isBlank(username) || StringUtils.isBlank(pw);
     }
-
-    private static final int countCharsFor1Tab = 5;
-
-    private static final int countCharsFor2Tabs = 10;
 
     public static List<Verordnung> createNewData() {
         return createNewData(COUNT_DATA);
@@ -204,7 +203,7 @@ public class ProgramService implements WebMvcConfigurer {
                 randomNumber);
         patient.setStrasse(
                 street);
-        patient.setPLZ(
+        patient.setPlz(
                 plz);
         patient.setOrt(
                 city);
@@ -277,13 +276,13 @@ public class ProgramService implements WebMvcConfigurer {
 
     public IsDataValid isDataValid(Verordnung verordnung){
         return isDataValid(
-                localdatetimeToString(
+                Tools.localdatetimeToString(
                         verordnung
                                 .getAusstellungsdatum()),
-                localdatetimeToString(
-                        instantToLocaldatetime(
+                Tools.localdatetimeToString(
+                        Tools.instantToLocaldatetime(
                                 Instant.now())),
-                localdateToString(
+                Tools.localdateToString(
                         verordnung
                                 .getPatient_id()
                                 .getGeburtsdatum()),
@@ -314,17 +313,5 @@ public class ProgramService implements WebMvcConfigurer {
         }
     }
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-
-    static String localdatetimeToString(LocalDateTime ldt){
-        return ldt.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-    }
-
-    static String localdateToString(LocalDate ld){
-        return ld.format(formatter);
-    }
-
-    static LocalDateTime instantToLocaldatetime(Instant instant){
-        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-    }
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
 }

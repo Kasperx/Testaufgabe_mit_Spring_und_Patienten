@@ -50,25 +50,25 @@ public class Verordnung {
 
     @Column(name = "Belegnummer",
             length = 10)
-    private String Belegnummer;
+    private String belegnummer;
 
     @Column(name = "Ausstellungsdatum",
             length = 10)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     // Although required be program description ... "LocalDateTime" is recommended for spring and usage of "date" makes datetimeformat useless
-    private LocalDateTime Ausstellungsdatum;
+    private LocalDateTime ausstellungsdatum;
 
     @Column(name = "Kostentraeger")
     @Size(max = 50)
-    private String Kostentraeger;
+    private String kostentraeger;
 
     @Column(name = "Betriebsstaettennummer")
     @Size(max = 9)
-    private String Betriebsstaettennummer;
+    private String betriebsstaettennummer;
 
     @Column(name = "Vertragsarztnummer")
     @Size(max = 9)
-    private String Vertragsarztnummer;
+    private String vertragsarztnummer;
 
     //@Column(name = "Patient")
     @OneToOne(cascade = CascadeType.ALL)
@@ -87,11 +87,11 @@ public class Verordnung {
         return "Verordnung{" +
                 "serialId=" + serialId +
                 ", id=" + id +
-                ", Belegnummer='" + Belegnummer + '\'' +
-                ", Ausstellungsdatum=" + Ausstellungsdatum +
-                ", Kostentraeger='" + Kostentraeger + '\'' +
-                ", Betriebsstaettennummer='" + Betriebsstaettennummer + '\'' +
-                ", Vertragsarztnummer='" + Vertragsarztnummer + '\'' +
+                ", Belegnummer='" + belegnummer + '\'' +
+                ", Ausstellungsdatum=" + ausstellungsdatum +
+                ", Kostentraeger='" + kostentraeger + '\'' +
+                ", Betriebsstaettennummer='" + betriebsstaettennummer + '\'' +
+                ", Vertragsarztnummer='" + vertragsarztnummer + '\'' +
                 ", patient_id=" + patient_id +
                 ", position_id=" + position_id +
                 '}';

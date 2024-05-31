@@ -87,72 +87,6 @@ public class ProgramController {
         return modelAndView;
     }
 
-    @PostMapping("/removeData/{id}")
-    @ResponseStatus(code = HttpStatus.OK)
-    public void removeData(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String pw,
-            @PathVariable int id,
-            Model model,
-            HttpServletResponse httpServletResponse){
-        switch (isAdminAccount(username, pw)) {
-            case YES -> {
-                Optional<Verordnung> optionalPerson = verordnungRepository.findById(id);
-                if(optionalPerson.isPresent()) {
-                    verordnungRepository.delete(optionalPerson.get());
-                } else {
-                    log.error("Error: Did not find data with id {}", id);
-                    model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
-                            "Did not find person with id "+id+" -> did not remove data: " + ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
-                    httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                }
-            }
-            case EMPTY_PARAMETER -> {
-                log.error(ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not remove data: " + ProgramService.IsAdmin.EMPTY_PARAMETER.toString());
-                httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-            case WRONG_PARAMETER -> {
-                log.error(ProgramService.IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE,
-                        "Did not remove data: " + ProgramService.IsAdmin.WRONG_PARAMETER.toString());
-                httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            }
-        }
-    }
-    /*
-    @GetMapping("")
-    public ModelAndView loadData(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String pw,
-            Model model
-    ){
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName(htmlFile);
-        switch (isAdminAccount(username, pw)) {
-            case YES -> {
-                log.info(IsAdmin.YES.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-            }
-            case EMPTY_PARAMETER -> {
-                log.error(IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
-                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE, IsAdmin.EMPTY_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-            }
-            case WRONG_PARAMETER -> {
-                log.error(IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_PERMISSION, false);
-                model.addAttribute(programService.NAME_FOR_MODEL_MESSAGE, IsAdmin.WRONG_PARAMETER.toString());
-                model.addAttribute(programService.NAME_FOR_MODEL_DATA, getDataWithoutSensibleInfos(personRepository.findAll()));
-            }
-        }
-        //model.addAttribute("Patient", viewPerson);
-        return modelAndView;
-    }
-
-    */
     @GetMapping("/kundennummer")
     @ResponseBody
     public List<Verordnung> loadData(@RequestParam String id){
@@ -189,6 +123,7 @@ public class ProgramController {
             belegnummer
         )){
             case YES -> {
+                //verordnungRepository.save();
                 return ResponseEntity
                         .status(HttpStatus.CREATED)
                         .body(IsDataValid.YES.toString());
@@ -216,7 +151,7 @@ public class ProgramController {
         }
     }
 
-    @PostMapping("/save")
+    @PostMapping("/saveobj")
     @ResponseBody
     @ResponseStatus(code = HttpStatus.OK, reason = "OK")
     public ResponseEntity<String> saveData(
@@ -227,6 +162,7 @@ public class ProgramController {
         if(verordnung != null) {
             switch (programService.isDataValid(verordnung)) {
                 case YES -> {
+                    //verordnungRepository.save(verordnung);
                     return ResponseEntity
                             .status(HttpStatus.CREATED)
                             .body(IsDataValid.YES.toString());
@@ -302,11 +238,4 @@ public class ProgramController {
     public boolean isDatabaseEmpty(){
         return jdbcTemplate.queryForList("select * from " + programService.DATABASE_NAME + " limit 1;").isEmpty();
     }
-
-    /*@Service
-    public static class ViewPerson{
-        String name;
-        String pw;
-    }
-     */
 }
