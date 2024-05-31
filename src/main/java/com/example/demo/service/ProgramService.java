@@ -42,7 +42,10 @@ public class ProgramService implements WebMvcConfigurer {
     private final static boolean HAVE_MORE_THAN_1_ADMIN = true;
     @Setter
     private static boolean CREATE_DATA_FOR_TEST = false;
-    static String DATE_FORMAT = "yyyy.MM.dd";
+    public final static String DATE_FORMAT = "yyyy.MM.dd";
+
+    private static boolean showDateInSpecialFormat = true;
+
     @Autowired
     VerordnungRepository verordnungRepository;
 
@@ -277,13 +280,13 @@ public class ProgramService implements WebMvcConfigurer {
 
     public IsDataValid isDataValid(Verordnung verordnung){
         return isDataValid(
-                localdatetimeToString(
+                Tools.localdatetimeToString(
                         verordnung
                                 .getAusstellungsdatum()),
-                localdatetimeToString(
-                        instantToLocaldatetime(
+                Tools.localdatetimeToString(
+                        Tools.instantToLocaldatetime(
                                 Instant.now())),
-                localdateToString(
+                Tools.localdateToString(
                         verordnung
                                 .getPatient_id()
                                 .getGeburtsdatum()),
@@ -299,7 +302,7 @@ public class ProgramService implements WebMvcConfigurer {
         LocalDateTime dt_geburtstag = LocalDateTime.parse(geburtstag, formatter);
         // Get all verordnung -> belegnummern
         if(StringUtils.isNotBlank(belegnummer)) {
-            Optional<Verordnung> optionalVerordnung = verordnungRepository.findVerordnungByBelegnummer(belegnummer);
+            Optional<Verordnung> optionalVerordnung = verordnungRepository.findVerordnungBybelegnummer(belegnummer);
             if (optionalVerordnung.isPresent() && ! optionalVerordnung.stream().toList().isEmpty()) {
                 return IsDataValid.BELEG_MEHRFACH_VORHANDEN;
             }
@@ -314,17 +317,5 @@ public class ProgramService implements WebMvcConfigurer {
         }
     }
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-
-    static String localdatetimeToString(LocalDateTime ldt){
-        return ldt.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-    }
-
-    static String localdateToString(LocalDate ld){
-        return ld.format(formatter);
-    }
-
-    static LocalDateTime instantToLocaldatetime(Instant instant){
-        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-    }
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
 }

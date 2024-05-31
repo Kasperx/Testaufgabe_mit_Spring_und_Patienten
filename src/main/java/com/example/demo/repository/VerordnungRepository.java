@@ -14,27 +14,5 @@ import java.util.Optional;
 @Transactional
 public interface VerordnungRepository extends JpaRepository<Verordnung, Integer> {
 
-    /*
-    @Query(
-            value = "select * from Patient",
-            nativeQuery = true
-    )
-    List<Patient> findAllWithPermission();
-    */
-    /*
-    @Query(
-            //value = "select firstname, lastname, age from Patient where isAdmin is false",
-            value = "select firstname, lastname, age from PATIENT where isAdmin is false",
-            nativeQuery = true
-    )
-    List<Object> findAllWithoutPermission();
-     */
-    /*
-    @Query(
-            value = "select * from PATIENT where isAdmin is true",
-            nativeQuery = true
-    )
-     */
-    //Optional<Patient> findByPatientVersichertennummer(String Versichertennummer);
-    Optional<Verordnung> findVerordnungByBelegnummer(String belegnummer);
+    Optional<Verordnung> findVerordnungBybelegnummer(String belegnummer);
 }
